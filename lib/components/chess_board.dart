@@ -1,4 +1,4 @@
-import 'package:chess/helper_methods/square_selector.dart';
+import 'package:chess/helper_methods/chess_piece_class.dart';
 import 'package:flutter/material.dart';
 
 class ChessBoard extends StatefulWidget {
