@@ -53,6 +53,7 @@ class _ChessGameState extends State<ChessGame> {
         selectedPiece = board[row][col];
         sRow = row;
         sCol = col;
+        // only calculating valid moves for selected piece (row, col)
         validMoves = validMovesCalculator(row, col, selectedPiece, board);
       } else {
         selectedPiece = null;

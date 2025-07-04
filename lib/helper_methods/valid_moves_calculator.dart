@@ -58,12 +58,137 @@ List<List<int>> validMovesCalculator(
             pieceMoves.add(<int>[r, c]);
           } else {
             if (board[r][c]!.isWhite != selectedPiece.isWhite) {
-              pieceMoves.add(<int>[r, c]); // adding the opponent's piece's coordinates
+              pieceMoves.add(<int>[
+                r,
+                c,
+              ]); // adding the opponent's piece's coordinates
             }
             break; // bishop cant move further the enemy's piece
           }
           r += dir[0]; // checking for each direction again and again
           c += dir[1];
+        }
+      }
+      break;
+
+    case 'rook':
+      List<List<int>> directions = <List<int>>[
+        <int>[1, 0], // down
+        <int>[-1, 0], // up
+        <int>[0, 1], // right
+        <int>[0, -1], // left
+      ];
+
+      for (List<int> dir in directions) {
+        int r = row + dir[0];
+        int c = col + dir[1];
+
+        while (isInBoard(r, c)) {
+          if (board[r][c] == null) {
+            pieceMoves.add(<int>[r, c]);
+          } else {
+            if (board[r][c]!.isWhite != selectedPiece.isWhite) {
+              pieceMoves.add(<int>[
+                r,
+                c,
+              ]); // adding the opponent's piece's coordinates
+            }
+            break; // rook cant move further the enemy's piece
+          }
+          r += dir[0]; // checking for each direction again and again
+          c += dir[1];
+        }
+      }
+      break;
+
+    case 'knight':
+      List<List<int>> directions = <List<int>>[
+        <int>[2, -1], // down and left
+        <int>[2, 1], // down and right
+        <int>[-2, 1], // up and right
+        <int>[-2, -1], // up and left
+        <int>[1, 2], // down and right
+        <int>[-1, 2], // up and right
+        <int>[1, -2], // down and left
+        <int>[-1, -2], // down and left
+      ];
+
+      // no while loop here as knight doesnt move continuously
+      for (List<int> dir in directions) {
+        int r = row + dir[0];
+        int c = col + dir[1];
+
+        if (isInBoard(r, c)) {
+          if (board[r][c] == null) {
+            pieceMoves.add(<int>[r, c]);
+          } else {
+            if (board[r][c]!.isWhite != selectedPiece.isWhite) {
+              pieceMoves.add(<int>[r, c]);
+            }
+          }
+        }
+      }
+      break;
+
+    case 'queen':
+      // copying directions of all pieces except knight for queen
+      List<List<int>> directions = <List<int>>[
+        <int>[-1, -1], // up and left
+        <int>[-1, 1], // up and right
+        <int>[1, -1], // down and left
+        <int>[1, 1], // down and right
+        <int>[1, 0], // down
+        <int>[-1, 0], // up
+        <int>[0, 1], // right
+        <int>[0, -1], // left
+      ];
+
+      for (List<int> dir in directions) {
+        int r = row + dir[0];
+        int c = col + dir[1];
+
+        while (isInBoard(r, c)) {
+          if (board[r][c] == null) {
+            pieceMoves.add(<int>[r, c]);
+          } else {
+            if (board[r][c]!.isWhite != selectedPiece.isWhite) {
+              pieceMoves.add(<int>[
+                r,
+                c,
+              ]); // adding the opponent's piece's coordinates
+            }
+            break; // queen cant move further the enemy's piece
+          }
+          r += dir[0]; // checking for each direction again and again
+          c += dir[1];
+        }
+      }
+      break;
+
+    case 'king':
+      List<List<int>> directions = <List<int>>[
+        <int>[1, 0],
+        <int>[0, 1],
+        <int>[-1, 0],
+        <int>[0, -1],
+        <int>[1, 1],
+        <int>[1, -1],
+        <int>[-1, 1],
+        <int>[-1, -1],
+      ];
+
+      for (List<int> dir in directions) {
+        int r = row + dir[0];
+        int c = col + dir[1];
+
+        if (isInBoard(r, c)) {
+          if (board[r][c] == null) {
+            pieceMoves.add(<int>[r, c]);
+          } else {
+            if (board[r][c]!.isWhite != selectedPiece.isWhite) {
+              pieceMoves.add(<int>[r, c]);
+            }
+          }
         }
       }
       break;
