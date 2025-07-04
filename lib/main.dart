@@ -2,6 +2,7 @@ import 'package:chess/components/chess_board.dart';
 import 'package:chess/constants/project_constants.dart';
 import 'package:chess/helper_methods/board_initializer.dart';
 import 'package:chess/helper_methods/chess_piece_class.dart';
+import 'package:chess/helper_methods/valid_moves_calculator.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -25,6 +26,8 @@ class _ChessGameState extends State<ChessGame> {
   int sRow = -1;
   int sCol = -1;
 
+  List<List<int>> validMoves = <List<int>>[];
+
   @override
   void initState() {
     super.initState();
@@ -33,14 +36,28 @@ class _ChessGameState extends State<ChessGame> {
 
   void selectChessPiece(int row, int col) {
     setState(() {
-      // puts the current selected piece in the [selectedPiece] object declared above
+      // moves the piece
+      for (List<int> validMove in validMoves) {
+        if (validMove[0] == row && validMove[1] == col) {
+          board[row][col] = selectedPiece;
+          board[sRow][sCol] = null;
+
+          selectedPiece = null;
+          sRow = sCol = -1;
+          validMoves.clear();
+          return;
+        }
+      }
+
       if (board[row][col] != null) {
         selectedPiece = board[row][col];
         sRow = row;
         sCol = col;
+        validMoves = validMovesCalculator(row, col, selectedPiece, board);
       } else {
-        // if some null square tapped, resets the color of the square
+        selectedPiece = null;
         sRow = sCol = -1;
+        validMoves.clear();
       }
     });
   }
@@ -66,6 +83,15 @@ class _ChessGameState extends State<ChessGame> {
                   int row = index ~/ 8;
                   int col = index % 8;
                   ChessPiece? piece = board[row][col];
+                  bool isMoveValid = false;
+
+                  // highlights the current selected piece's valid move
+                  for (List<int> validMove in validMoves) {
+                    if (validMove[0] == row && validMove[1] == col) {
+                      isMoveValid = true;
+                    }
+                  }
+
                   return ChessBoard(
                     index: index,
                     piece: piece,
@@ -73,6 +99,7 @@ class _ChessGameState extends State<ChessGame> {
                     onTap: () {
                       return selectChessPiece(row, col);
                     },
+                    isMoveValid: isMoveValid,
                   );
                 },
               ),
