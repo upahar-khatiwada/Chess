@@ -1,9 +1,9 @@
 import 'package:chess/helper_methods/chess_piece_class.dart';
 
 List<List<ChessPiece?>> initializeBoard(List<List<ChessPiece?>> board) {
-  board = List.generate(
+  board = List<List<ChessPiece?>>.generate(
     8,
-    (int index) => List.generate(8, (int index) => null),
+    (int index) => List<ChessPiece?>.generate(8, (int index) => null),
   );
 
   for (int i = 0; i < 8; i++) {
