@@ -54,12 +54,41 @@ class _ChessBoardState extends State<ChessBoard> {
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
+        decoration: BoxDecoration(
+          color: squareColor,
+          border: Border.all(
+            color: _getBorderColor(),
+            width: _getBorderWidth(),
+          ),
+        ),
         // if tapped on a piece, color green else default color
-        color: squareColor,
         child: widget.piece != null
             ? Image.asset(widget.piece!.imagePath)
             : null,
       ),
     );
+  }
+
+  Color _getBorderColor() {
+    if (widget.isPieceSelected) {
+      return Colors.black45;
+    } else if (widget.isMoveValid) {
+      ChessPiece? targetPiece = widget.board[widget.row][widget.col];
+      if (targetPiece != null &&
+          widget.currentlySelectedPiece != null &&
+          targetPiece.isWhite != widget.currentlySelectedPiece!.isWhite) {
+        return Colors.red;
+      } else {
+        return Colors.black;
+      }
+    }
+    return Colors.transparent;
+  }
+
+  double _getBorderWidth() {
+    if (widget.isPieceSelected || widget.isMoveValid) {
+      return 3;
+    }
+    return 0;
   }
 }
