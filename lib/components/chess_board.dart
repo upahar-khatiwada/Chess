@@ -8,6 +8,10 @@ class ChessBoard extends StatefulWidget {
   final bool isPieceSelected;
   final VoidCallback onTap;
   final bool isMoveValid;
+  final List<List<ChessPiece?>> board;
+  final int row;
+  final int col;
+  final ChessPiece? currentlySelectedPiece;
   const ChessBoard({
     super.key,
     required this.index,
@@ -15,6 +19,10 @@ class ChessBoard extends StatefulWidget {
     required this.isPieceSelected,
     required this.onTap,
     required this.isMoveValid,
+    required this.board,
+    required this.row,
+    required this.col,
+    required this.currentlySelectedPiece,
   });
 
   @override
@@ -26,10 +34,17 @@ class _ChessBoardState extends State<ChessBoard> {
 
   @override
   Widget build(BuildContext context) {
+    ChessPiece? enemyPiece = widget.board[widget.row][widget.col];
     if (widget.isPieceSelected) {
       squareColor = pieceSelectedColor;
     } else if (widget.isMoveValid) {
-      squareColor = possibleMovesColor;
+      if (enemyPiece != null &&
+          widget.currentlySelectedPiece != null &&
+          enemyPiece.isWhite != widget.currentlySelectedPiece!.isWhite) {
+        squareColor = Colors.red;
+      } else {
+        squareColor = possibleMovesColor;
+      }
     } else {
       squareColor = (widget.index % 8 + (widget.index / 8).toInt()) % 2 == 0
           ? whiteSquare

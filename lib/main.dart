@@ -108,6 +108,10 @@ class _ChessGameState extends State<ChessGame> {
                       return selectChessPiece(row, col);
                     },
                     isMoveValid: isMoveValid,
+                    board: board,
+                    row: row,
+                    col: col,
+                    currentlySelectedPiece: selectedPiece,
                   );
                 },
               ),
