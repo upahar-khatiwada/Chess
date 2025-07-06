@@ -12,6 +12,10 @@ class ChessBoard extends StatefulWidget {
   final int row;
   final int col;
   final ChessPiece? currentlySelectedPiece;
+  final bool isShortCastlePossibleForWhite;
+  final bool isLongCastlePossibleForWhite;
+  final bool isShortCastlePossibleForBlack;
+  final bool isLongCastlePossibleForBlack;
   const ChessBoard({
     super.key,
     required this.index,
@@ -23,6 +27,10 @@ class ChessBoard extends StatefulWidget {
     required this.row,
     required this.col,
     required this.currentlySelectedPiece,
+    required this.isShortCastlePossibleForWhite,
+    required this.isLongCastlePossibleForWhite,
+    required this.isShortCastlePossibleForBlack,
+    required this.isLongCastlePossibleForBlack,
   });
 
   @override
@@ -56,10 +64,7 @@ class _ChessBoardState extends State<ChessBoard> {
       child: Container(
         decoration: BoxDecoration(
           color: squareColor,
-          border: Border.all(
-            color: _getBorderColor(),
-            width: _getBorderWidth(),
-          ),
+          border: Border.all(color: getBorderColor(), width: getBorderWidth()),
         ),
         // if tapped on a piece, color green else default color
         child: widget.piece != null
@@ -69,7 +74,7 @@ class _ChessBoardState extends State<ChessBoard> {
     );
   }
 
-  Color _getBorderColor() {
+  Color getBorderColor() {
     if (widget.isPieceSelected) {
       return Colors.black45;
     } else if (widget.isMoveValid) {
@@ -85,9 +90,9 @@ class _ChessBoardState extends State<ChessBoard> {
     return Colors.transparent;
   }
 
-  double _getBorderWidth() {
+  double getBorderWidth() {
     if (widget.isPieceSelected || widget.isMoveValid) {
-      return 3;
+      return 2;
     }
     return 0;
   }

@@ -6,6 +6,10 @@ List<List<int>> validMovesCalculator(
   int col,
   ChessPiece? selectedPiece,
   List<List<ChessPiece?>> board,
+  bool isShortCastlePossibleForWhite,
+  bool isLongCastlePossibleForWhite,
+  bool isShortCastlePossibleForBlack,
+  bool isLongCastlePossibleForBlack,
 ) {
   int direction = selectedPiece!.isWhite ? -1 : 1;
   List<List<int>> pieceMoves = <List<int>>[];
@@ -189,6 +193,42 @@ List<List<int>> validMovesCalculator(
               pieceMoves.add(<int>[r, c]);
             }
           }
+        }
+
+        // for white short castle
+        if (isInBoard(r, c) &&
+            board[7][5] == null &&
+            board[7][6] == null &&
+            isShortCastlePossibleForWhite &&
+            selectedPiece.isWhite) {
+          pieceMoves.add(<int>[7, 6]);
+          pieceMoves.add(<int>[7, 5]);
+        } // for white long castle
+        else if (isInBoard(r, c) &&
+            board[7][1] == null &&
+            board[7][2] == null &&
+            board[7][3] == null &&
+            isLongCastlePossibleForWhite &&
+            selectedPiece.isWhite) {
+          pieceMoves.add(<int>[7, 2]);
+          pieceMoves.add(<int>[7, 3]);
+        } // for black long castle
+        else if (isInBoard(r, c) &&
+            board[0][1] == null &&
+            board[0][2] == null &&
+            board[0][3] == null &&
+            isLongCastlePossibleForBlack &&
+            !selectedPiece.isWhite) {
+          pieceMoves.add(<int>[0, 2]);
+          pieceMoves.add(<int>[0, 3]);
+        } // for black short castle
+        else if (isInBoard(r, c) &&
+            board[0][5] == null &&
+            board[0][6] == null &&
+            isShortCastlePossibleForBlack &&
+            !selectedPiece.isWhite) {
+          pieceMoves.add(<int>[0, 6]);
+          pieceMoves.add(<int>[0, 5]);
         }
       }
       break;
