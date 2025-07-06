@@ -26,7 +26,11 @@ class _ChessGameState extends State<ChessGame> {
   int sRow = -1;
   int sCol = -1;
 
+  // list to store valid moves
   List<List<int>> validMoves = <List<int>>[];
+
+  // boolean to check whose turn it is
+  bool isWhiteTurn = true;
 
   @override
   void initState() {
@@ -45,11 +49,14 @@ class _ChessGameState extends State<ChessGame> {
           selectedPiece = null;
           sRow = sCol = -1;
           validMoves.clear();
+
+          // switch turn
+          isWhiteTurn = !isWhiteTurn;
           return;
         }
       }
 
-      if (board[row][col] != null) {
+      if (board[row][col] != null && board[row][col]!.isWhite == isWhiteTurn) {
         selectedPiece = board[row][col];
         sRow = row;
         sCol = col;

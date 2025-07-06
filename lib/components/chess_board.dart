@@ -41,7 +41,6 @@ class _ChessBoardState extends State<ChessBoard> {
       child: Container(
         // if tapped on a piece, color green else default color
         color: squareColor,
-
         child: widget.piece != null
             ? Image.asset(widget.piece!.imagePath)
             : null,
