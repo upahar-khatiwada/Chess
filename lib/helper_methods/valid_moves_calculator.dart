@@ -32,17 +32,24 @@ List<List<int>> validMovesCalculator(
         }
       }
 
+      // variable to store current piece's color to fix the bug
+      // where a same color pawn could diagonally capture other same color pawn
+      bool isWhite = board[row][col]!.isWhite;
+
       // diagonal capture for col + 1
       if (isInBoard(row + direction, col + 1) &&
-          board[row + direction][col + 1] != null) {
+          board[row + direction][col + 1] != null &&
+          board[row + direction][col + 1]!.isWhite != isWhite) {
         pieceMoves.add(<int>[row + direction, col + 1]);
       }
 
       // diagonal capture for col - 1
       if (isInBoard(row + direction, col - 1) &&
-          board[row + direction][col - 1] != null) {
+          board[row + direction][col - 1] != null &&
+          board[row + direction][col - 1]!.isWhite != isWhite) {
         pieceMoves.add(<int>[row + direction, col - 1]);
       }
+
       break;
 
     case 'bishop':
