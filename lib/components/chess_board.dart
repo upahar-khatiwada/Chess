@@ -2,7 +2,7 @@ import 'package:chess/constants/project_constants.dart';
 import 'package:chess/helper_methods/chess_piece_class.dart';
 import 'package:flutter/material.dart';
 
-class ChessBoard extends StatefulWidget {
+class ChessBoard extends StatelessWidget {
   final int index;
   final ChessPiece? piece;
   final bool isPieceSelected;
@@ -16,7 +16,12 @@ class ChessBoard extends StatefulWidget {
   final bool isLongCastlePossibleForWhite;
   final bool isShortCastlePossibleForBlack;
   final bool isLongCastlePossibleForBlack;
-  const ChessBoard({
+  final bool isWhiteKingChecked;
+  final bool isBlackKingChecked;
+  final List<int> whiteKingPosition;
+  final List<int> blackKingPosition;
+
+  ChessBoard({
     super.key,
     required this.index,
     required this.piece,
@@ -31,57 +36,66 @@ class ChessBoard extends StatefulWidget {
     required this.isLongCastlePossibleForWhite,
     required this.isShortCastlePossibleForBlack,
     required this.isLongCastlePossibleForBlack,
+    required this.isWhiteKingChecked,
+    required this.isBlackKingChecked,
+    required this.whiteKingPosition,
+    required this.blackKingPosition,
   });
 
   @override
-  State<ChessBoard> createState() => _ChessBoardState();
-}
-
-class _ChessBoardState extends State<ChessBoard> {
-  Color? squareColor;
-
-  @override
   Widget build(BuildContext context) {
-    ChessPiece? enemyPiece = widget.board[widget.row][widget.col];
-    if (widget.isPieceSelected) {
+    Color? squareColor;
+    ChessPiece? enemyPiece = board[row][col];
+    if (isPieceSelected) {
       squareColor = pieceSelectedColor;
-    } else if (widget.isMoveValid) {
+    } else if (isMoveValid) {
       if (enemyPiece != null &&
-          widget.currentlySelectedPiece != null &&
-          enemyPiece.isWhite != widget.currentlySelectedPiece!.isWhite) {
+          currentlySelectedPiece != null &&
+          enemyPiece.isWhite != currentlySelectedPiece!.isWhite) {
         squareColor = Colors.red;
       } else {
         squareColor = possibleMovesColor;
       }
+    } else if ((isWhiteKingChecked &&
+            piece != null &&
+            piece!.pieceName == 'king' &&
+            piece!.isWhite &&
+            row == whiteKingPosition[0] &&
+            col == whiteKingPosition[1]) ||
+        (isBlackKingChecked &&
+            piece != null &&
+            piece!.pieceName == 'king' &&
+            !piece!.isWhite &&
+            row == blackKingPosition[0] &&
+            col == blackKingPosition[1])) {
+      squareColor = Colors.redAccent;
     } else {
-      squareColor = (widget.index % 8 + (widget.index / 8).toInt()) % 2 == 0
+      squareColor = (index % 8 + (index / 8).toInt()) % 2 == 0
           ? whiteSquare
           : blackSquare;
     }
 
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: squareColor,
           border: Border.all(color: getBorderColor(), width: getBorderWidth()),
         ),
         // if tapped on a piece, color green else default color
-        child: widget.piece != null
-            ? Image.asset(widget.piece!.imagePath)
-            : null,
+        child: piece != null ? Image.asset(piece!.imagePath) : null,
       ),
     );
   }
 
   Color getBorderColor() {
-    if (widget.isPieceSelected) {
+    if (isPieceSelected) {
       return Colors.black45;
-    } else if (widget.isMoveValid) {
-      ChessPiece? targetPiece = widget.board[widget.row][widget.col];
+    } else if (isMoveValid) {
+      ChessPiece? targetPiece = board[row][col];
       if (targetPiece != null &&
-          widget.currentlySelectedPiece != null &&
-          targetPiece.isWhite != widget.currentlySelectedPiece!.isWhite) {
+          currentlySelectedPiece != null &&
+          targetPiece.isWhite != currentlySelectedPiece!.isWhite) {
         return Colors.red;
       } else {
         return Colors.black;
@@ -91,7 +105,7 @@ class _ChessBoardState extends State<ChessBoard> {
   }
 
   double getBorderWidth() {
-    if (widget.isPieceSelected || widget.isMoveValid) {
+    if (isPieceSelected || isMoveValid) {
       return 2;
     }
     return 0;
