@@ -18,6 +18,10 @@ class ChessGame extends StatefulWidget {
 }
 
 class _ChessGameState extends State<ChessGame> {
+  // boolean to check if check mate occured
+  bool isGameOver = false;
+
+  // variable to store the board
   List<List<ChessPiece?>> board = <List<ChessPiece?>>[];
 
   // holds the current selected piece
@@ -47,178 +51,229 @@ class _ChessGameState extends State<ChessGame> {
   bool isBlackKingChecked = false;
 
   void selectChessPiece(int row, int col) {
-    setState(() {
-      // moves the piece
-      for (List<int> validMove in validMoves) {
-        if (validMove[0] == row && validMove[1] == col) {
-          if (selectedPiece != null &&
-              selectedPiece!.isWhite &&
-              selectedPiece!.pieceName == 'king' &&
-              sRow == 7 &&
-              sCol == 4 &&
-              !(row == 7 && (col == 6 || col == 2))) {
-            isShortCastlePossibleForWhite = isLongCastlePossibleForWhite =
-                false;
-          } // for checking if white right rook moved
-          else if (selectedPiece != null &&
-              !selectedPiece!.isWhite &&
-              selectedPiece!.pieceName == 'rook' &&
-              sRow == 7 &&
-              sCol == 7 &&
-              (row != 7 || col != 7)) {
-            isShortCastlePossibleForWhite = false;
-          } // for checking if white left rook moved
-          else if (selectedPiece != null &&
-              selectedPiece!.isWhite &&
-              selectedPiece!.pieceName == 'rook' &&
-              sRow == 7 &&
-              sCol == 0 &&
-              (row != 7 || col != 0)) {
-            isLongCastlePossibleForWhite = false;
-          }
-
-          // short white castle
-          if (selectedPiece != null &&
-              selectedPiece!.isWhite &&
-              selectedPiece!.pieceName == 'king' &&
-              sRow == 7 &&
-              sCol == 4 &&
-              row == 7 &&
-              col == 6) {
-            board[7][6] = selectedPiece;
-            board[7][4] = null;
-            board[7][5] = board[7][7];
-            board[7][7] = null;
-
-            isShortCastlePossibleForWhite = isLongCastlePossibleForWhite =
-                false;
-          }
-          // long castle white
-          else if (selectedPiece != null &&
-              selectedPiece!.isWhite &&
-              selectedPiece!.pieceName == 'king' &&
-              sRow == 7 &&
-              sCol == 4 &&
-              row == 7 &&
-              col == 2) {
-            board[7][2] = selectedPiece;
-            board[7][4] = null;
-            board[7][3] = board[7][0];
-            board[7][0] = null;
-
-            isShortCastlePossibleForWhite = isLongCastlePossibleForWhite =
-                false;
-          }
-          // black king movement detection for castle possibility
-          else if (selectedPiece != null &&
-              !selectedPiece!.isWhite &&
-              selectedPiece!.pieceName == 'king' &&
-              sRow == 0 &&
-              sCol == 4 &&
-              !(row == 7 && (col == 6 || col == 2))) {
-            isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
-                false;
-          } // for checking if black left rook moved
-          else if (selectedPiece != null &&
-              selectedPiece!.isWhite &&
-              selectedPiece!.pieceName == 'rook' &&
-              sRow == 0 &&
-              sCol == 0 &&
-              (row != 0 || col != 0)) {
-            isShortCastlePossibleForBlack = false;
-          } // for checking if black right rook moved
-          else if (selectedPiece != null &&
-              selectedPiece!.isWhite &&
-              selectedPiece!.pieceName == 'rook' &&
-              sRow == 0 &&
-              sCol == 7 &&
-              (row != 0 || col != 7)) {
-            isLongCastlePossibleForBlack = false;
-          } // short black castle
-          if (selectedPiece != null &&
-              !selectedPiece!.isWhite &&
-              selectedPiece!.pieceName == 'king' &&
-              sRow == 0 &&
-              sCol == 4 &&
-              row == 0 &&
-              col == 6) {
-            board[0][6] = selectedPiece;
-            board[0][4] = null;
-            board[0][5] = board[0][7];
-            board[0][7] = null;
-
-            isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
-                false;
-          }
-          // long castle black
-          else if (selectedPiece != null &&
-              selectedPiece!.pieceName == 'king' &&
-              sRow == 0 &&
-              sCol == 4 &&
-              row == 0 &&
-              col == 2) {
-            board[0][2] = selectedPiece;
-            board[0][4] = null;
-            board[0][3] = board[0][0];
-            board[0][0] = null;
-
-            isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
-                false;
-          } else {
-            board[row][col] = selectedPiece;
-            board[sRow][sCol] = null;
-
-            if (selectedPiece != null && selectedPiece!.pieceName == 'king') {
-              if (selectedPiece!.isWhite) {
-                whiteKingPos = <int>[row, col];
-              } else {
-                blackKingPos = <int>[row, col];
-              }
+    if (!isGameOver) {
+      setState(() {
+        // moves the piece
+        for (List<int> validMove in validMoves) {
+          if (validMove[0] == row && validMove[1] == col) {
+            if (selectedPiece != null &&
+                selectedPiece!.isWhite &&
+                selectedPiece!.pieceName == 'king' &&
+                sRow == 7 &&
+                sCol == 4 &&
+                !(row == 7 && (col == 6 || col == 2))) {
+              isShortCastlePossibleForWhite = isLongCastlePossibleForWhite =
+                  false;
+            } // for checking if white right rook moved
+            else if (selectedPiece != null &&
+                !selectedPiece!.isWhite &&
+                selectedPiece!.pieceName == 'rook' &&
+                sRow == 7 &&
+                sCol == 7 &&
+                (row != 7 || col != 7)) {
+              isShortCastlePossibleForWhite = false;
+            } // for checking if white left rook moved
+            else if (selectedPiece != null &&
+                selectedPiece!.isWhite &&
+                selectedPiece!.pieceName == 'rook' &&
+                sRow == 7 &&
+                sCol == 0 &&
+                (row != 7 || col != 0)) {
+              isLongCastlePossibleForWhite = false;
             }
 
-            isWhiteKingChecked = kingInCheck(true);
-            isBlackKingChecked = kingInCheck(false);
-          }
+            // short white castle
+            if (selectedPiece != null &&
+                selectedPiece!.isWhite &&
+                selectedPiece!.pieceName == 'king' &&
+                sRow == 7 &&
+                sCol == 4 &&
+                row == 7 &&
+                col == 6) {
+              board[7][6] = selectedPiece;
+              board[7][4] = null;
+              board[7][5] = board[7][7];
+              board[7][7] = null;
 
+              isShortCastlePossibleForWhite = isLongCastlePossibleForWhite =
+                  false;
+            }
+            // long castle white
+            else if (selectedPiece != null &&
+                selectedPiece!.isWhite &&
+                selectedPiece!.pieceName == 'king' &&
+                sRow == 7 &&
+                sCol == 4 &&
+                row == 7 &&
+                col == 2) {
+              board[7][2] = selectedPiece;
+              board[7][4] = null;
+              board[7][3] = board[7][0];
+              board[7][0] = null;
+
+              isShortCastlePossibleForWhite = isLongCastlePossibleForWhite =
+                  false;
+            }
+            // black king movement detection for castle possibility
+            else if (selectedPiece != null &&
+                !selectedPiece!.isWhite &&
+                selectedPiece!.pieceName == 'king' &&
+                sRow == 0 &&
+                sCol == 4 &&
+                !(row == 7 && (col == 6 || col == 2))) {
+              isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
+                  false;
+            } // for checking if black left rook moved
+            else if (selectedPiece != null &&
+                selectedPiece!.isWhite &&
+                selectedPiece!.pieceName == 'rook' &&
+                sRow == 0 &&
+                sCol == 0 &&
+                (row != 0 || col != 0)) {
+              isShortCastlePossibleForBlack = false;
+            } // for checking if black right rook moved
+            else if (selectedPiece != null &&
+                selectedPiece!.isWhite &&
+                selectedPiece!.pieceName == 'rook' &&
+                sRow == 0 &&
+                sCol == 7 &&
+                (row != 0 || col != 7)) {
+              isLongCastlePossibleForBlack = false;
+            } // short black castle
+            if (selectedPiece != null &&
+                !selectedPiece!.isWhite &&
+                selectedPiece!.pieceName == 'king' &&
+                sRow == 0 &&
+                sCol == 4 &&
+                row == 0 &&
+                col == 6) {
+              board[0][6] = selectedPiece;
+              board[0][4] = null;
+              board[0][5] = board[0][7];
+              board[0][7] = null;
+
+              isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
+                  false;
+            }
+            // long castle black
+            else if (selectedPiece != null &&
+                selectedPiece!.pieceName == 'king' &&
+                sRow == 0 &&
+                sCol == 4 &&
+                row == 0 &&
+                col == 2) {
+              board[0][2] = selectedPiece;
+              board[0][4] = null;
+              board[0][3] = board[0][0];
+              board[0][0] = null;
+
+              isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
+                  false;
+            } else {
+              board[row][col] = selectedPiece;
+              board[sRow][sCol] = null;
+
+              if (selectedPiece != null && selectedPiece!.pieceName == 'king') {
+                if (selectedPiece!.isWhite) {
+                  whiteKingPos = <int>[row, col];
+                } else {
+                  blackKingPos = <int>[row, col];
+                }
+              }
+
+              isWhiteKingChecked = kingInCheck(true);
+              isBlackKingChecked = kingInCheck(false);
+            }
+
+            selectedPiece = null;
+            sRow = sCol = -1;
+            validMoves.clear();
+
+            if (checkMate(isWhiteTurn)) {
+              isGameOver = true;
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  content: Text(isWhiteTurn ? 'White Wins!' : 'Black Wins'),
+                  contentPadding: const EdgeInsets.all(16),
+                  title: const Text(
+                    'Game Over!',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  actions: <Widget>[
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        initializeBoard(board);
+                        sRow = -1;
+                        sCol = -1;
+                        validMoves = <List<int>>[];
+                        isWhiteTurn = true;
+                        isShortCastlePossibleForWhite = true;
+                        isLongCastlePossibleForWhite = true;
+                        isShortCastlePossibleForBlack = true;
+                        isLongCastlePossibleForBlack = true;
+                        whiteKingPos = <int>[7, 4];
+                        blackKingPos = <int>[0, 4];
+                        isKingChecked = false;
+                        isWhiteKingChecked = false;
+                        isBlackKingChecked = false;
+                        validMoves.clear();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.greenAccent,
+                      ),
+                      child: const Text('Play Again!'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                      ),
+                      child: const Text('Exit!'),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // switch turn
+            isWhiteTurn = !isWhiteTurn;
+            return;
+          }
+        }
+
+        if (board[row][col] != null &&
+            board[row][col]!.isWhite == isWhiteTurn) {
+          selectedPiece = board[row][col];
+          sRow = row;
+          sCol = col;
+          // only calculating valid moves for selected piece (row, col)
+          List<List<int>> rawMoves = validMovesCalculator(
+            row,
+            col,
+            selectedPiece,
+            board,
+            isShortCastlePossibleForWhite,
+            isLongCastlePossibleForWhite,
+            isShortCastlePossibleForBlack,
+            isLongCastlePossibleForBlack,
+          );
+
+          validMoves = filterLegalMoves(
+            rawMoves,
+            row,
+            col,
+            selectedPiece,
+            isWhiteTurn,
+          );
+        } else {
           selectedPiece = null;
           sRow = sCol = -1;
           validMoves.clear();
-
-          // switch turn
-          isWhiteTurn = !isWhiteTurn;
-          return;
         }
-      }
-
-      if (board[row][col] != null && board[row][col]!.isWhite == isWhiteTurn) {
-        selectedPiece = board[row][col];
-        sRow = row;
-        sCol = col;
-        // only calculating valid moves for selected piece (row, col)
-        List<List<int>> rawMoves = validMovesCalculator(
-          row,
-          col,
-          selectedPiece,
-          board,
-          isShortCastlePossibleForWhite,
-          isLongCastlePossibleForWhite,
-          isShortCastlePossibleForBlack,
-          isLongCastlePossibleForBlack,
-        );
-
-        validMoves = filterLegalMoves(
-          rawMoves,
-          row,
-          col,
-          selectedPiece,
-          isWhiteTurn,
-        );
-      } else {
-        selectedPiece = null;
-        sRow = sCol = -1;
-        validMoves.clear();
-      }
-    });
+      });
+    }
   }
 
   bool kingInCheck(bool whiteTurn) {
@@ -273,7 +328,8 @@ class _ChessGameState extends State<ChessGame> {
       ChessPiece? boardState = board[endRow][endCol];
 
       // testing the new moves
-      board[endRow][endCol] = selectedPiece; // places current selected piece at a position
+      board[endRow][endCol] =
+          selectedPiece; // places current selected piece at a position
       board[row][col] = null; // removes it from current position
 
       // if selected piece is king then store new position else use king's current position
@@ -313,6 +369,48 @@ class _ChessGameState extends State<ChessGame> {
     }
 
     return legalMoves;
+  }
+
+  bool checkMate(bool isWhiteTurn) {
+    // king not in check so false
+    if (!kingInCheck(isWhiteTurn)) {
+      return false;
+    }
+
+    // at least one legal move
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        ChessPiece? currentPiece = board[i][j];
+
+        if (currentPiece != null && currentPiece.isWhite == isWhiteTurn) {
+          List<List<int>> rawMoves = validMovesCalculator(
+            i,
+            j,
+            currentPiece,
+            board,
+            isShortCastlePossibleForWhite,
+            isLongCastlePossibleForWhite,
+            isShortCastlePossibleForBlack,
+            isLongCastlePossibleForBlack,
+          );
+
+          List<List<int>> legalMoves = filterLegalMoves(
+            rawMoves,
+            i,
+            j,
+            currentPiece,
+            isWhiteTurn,
+          );
+
+          if (legalMoves.isNotEmpty) {
+            return false; // at least one legal move exists
+          }
+        }
+      }
+    }
+
+    // no legal moves
+    return true;
   }
 
   @override
