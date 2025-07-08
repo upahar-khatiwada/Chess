@@ -2,8 +2,12 @@ import 'package:chess/components/chess_board.dart';
 import 'package:chess/constants/project_constants.dart';
 import 'package:chess/helper_methods/board_initializer.dart';
 import 'package:chess/helper_methods/chess_piece_class.dart';
+import 'package:chess/helper_methods/show_dialog.dart';
 import 'package:chess/helper_methods/valid_moves_calculator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   runApp(const ChessGame());
@@ -79,9 +83,8 @@ class _ChessGameState extends State<ChessGame> {
               (row != 7 || col != 0)) {
             isLongCastlePossibleForWhite = false;
           }
-
           // short white castle
-          if (selectedPiece != null &&
+          else if (selectedPiece != null &&
               selectedPiece!.isWhite &&
               selectedPiece!.pieceName == 'king' &&
               sRow == 7 &&
@@ -138,7 +141,7 @@ class _ChessGameState extends State<ChessGame> {
               (row != 0 || col != 7)) {
             isLongCastlePossibleForBlack = false;
           } // short black castle
-          if (selectedPiece != null &&
+          else if (selectedPiece != null &&
               !selectedPiece!.isWhite &&
               selectedPiece!.pieceName == 'king' &&
               sRow == 0 &&
@@ -167,7 +170,14 @@ class _ChessGameState extends State<ChessGame> {
 
             isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
                 false;
-          } else {
+          }
+          //  else if (selectedPiece != null &&
+          //     selectedPiece!.pieceName == 'pawn' &&
+          //     selectedPiece!.isWhite &&
+          //     sRow == 1 &&
+          //     row == 0) {
+          // }
+          else {
             board[row][col] = selectedPiece;
             board[sRow][sCol] = null;
 
@@ -193,6 +203,48 @@ class _ChessGameState extends State<ChessGame> {
           if (checkMate(isWhiteTurn)) {
             setState(() {
               isGameOver = true;
+            });
+
+            // Delay dialog until after the current frame
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              final BuildContext? ctx = navigatorKey.currentState?.context;
+              // print('Navigator context: $ctx');
+              if (ctx != null) {
+                showDialog<void>(
+                  context: ctx,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Game Over!'),
+                      content: Text(
+                        isWhiteTurn ? 'Black Wins!' : 'White Wins!',
+                      ),
+                      actions: <Widget>[
+                        ElevatedButton(
+                          onPressed: () {
+                            SystemNavigator.pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                          ),
+                          child: const Text('Exit!'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            resetGame();
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.greenAccent,
+                          ),
+                          child: const Text('Play Again'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              } else {
+                print('Context not available');
+              }
             });
           }
 
@@ -324,7 +376,7 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   bool checkMate(bool isWhiteTurn) {
-    print('Checking checkmate for ${isWhiteTurn ? 'White' : 'Black'}');
+    // print('checking checkmate for ${isWhiteTurn ? 'white' : 'black'}');
     // king not in check so false
     if (!kingInCheck(isWhiteTurn, isWhiteTurn ? whiteKingPos : blackKingPos)) {
       return false;
@@ -406,6 +458,7 @@ class _ChessGameState extends State<ChessGame> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       home: Scaffold(
         backgroundColor: bgColor,
         body: Column(

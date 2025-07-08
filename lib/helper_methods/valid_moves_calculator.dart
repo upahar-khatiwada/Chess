@@ -1,6 +1,5 @@
 import 'package:chess/helper_methods/piece_in_board.dart';
 import 'package:chess/helper_methods/chess_piece_class.dart';
-import 'package:chess/main.dart';
 
 List<List<int>> validMovesCalculator(
   int row,
