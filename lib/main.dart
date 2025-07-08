@@ -2,6 +2,7 @@ import 'package:chess/components/chess_board.dart';
 import 'package:chess/constants/project_constants.dart';
 import 'package:chess/helper_methods/board_initializer.dart';
 import 'package:chess/helper_methods/chess_piece_class.dart';
+import 'package:chess/helper_methods/elevated_buttons.dart';
 import 'package:chess/helper_methods/valid_moves_calculator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -184,9 +185,10 @@ class _ChessGameState extends State<ChessGame> {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: const Text('Pick a piece for promotion!'),
+                        actionsAlignment: MainAxisAlignment.spaceEvenly,
                         actions: <Widget>[
                           // button for rook
-                          ElevatedButton(
+                          MyElevatedButton(
                             onPressed: () {
                               setState(() {
                                 board[promoRow][promoCol] = null;
@@ -195,7 +197,6 @@ class _ChessGameState extends State<ChessGame> {
                                   isWhite: true,
                                   imagePath: 'assets/white/rook.png',
                                 );
-
                                 selectedPiece = null;
                                 sRow = sCol = -1;
                                 validMoves.clear();
@@ -203,10 +204,10 @@ class _ChessGameState extends State<ChessGame> {
                               });
                               Navigator.of(context).pop();
                             },
-                            child: Image.asset('assets/white/rook.png'),
+                            pieceName: 'Rook',
                           ),
                           // button for queen
-                          ElevatedButton(
+                          MyElevatedButton(
                             onPressed: () {
                               setState(() {
                                 board[promoRow][promoCol] = null;
@@ -215,7 +216,6 @@ class _ChessGameState extends State<ChessGame> {
                                   isWhite: true,
                                   imagePath: 'assets/white/queen.png',
                                 );
-
                                 selectedPiece = null;
                                 sRow = sCol = -1;
                                 validMoves.clear();
@@ -223,10 +223,10 @@ class _ChessGameState extends State<ChessGame> {
                               });
                               Navigator.of(context).pop();
                             },
-                            child: Image.asset('assets/white/queen.png'),
+                            pieceName: 'Queen',
                           ),
                           // button for knight
-                          ElevatedButton(
+                          MyElevatedButton(
                             onPressed: () {
                               setState(() {
                                 board[promoRow][promoCol] = null;
@@ -235,7 +235,6 @@ class _ChessGameState extends State<ChessGame> {
                                   isWhite: true,
                                   imagePath: 'assets/white/knight.png',
                                 );
-
                                 selectedPiece = null;
                                 sRow = sCol = -1;
                                 validMoves.clear();
@@ -243,10 +242,10 @@ class _ChessGameState extends State<ChessGame> {
                               });
                               Navigator.of(context).pop();
                             },
-                            child: Image.asset('assets/white/knight.png'),
+                            pieceName: 'Knight',
                           ),
                           // button for bishop
-                          ElevatedButton(
+                          MyElevatedButton(
                             onPressed: () {
                               setState(() {
                                 board[promoRow][promoCol] = null;
@@ -255,7 +254,6 @@ class _ChessGameState extends State<ChessGame> {
                                   isWhite: true,
                                   imagePath: 'assets/white/bishop.png',
                                 );
-
                                 selectedPiece = null;
                                 sRow = sCol = -1;
                                 validMoves.clear();
@@ -263,7 +261,7 @@ class _ChessGameState extends State<ChessGame> {
                               });
                               Navigator.of(context).pop();
                             },
-                            child: Image.asset('assets/white/bishop.png'),
+                            pieceName: 'Bishop',
                           ),
                         ],
                       );
@@ -280,9 +278,10 @@ class _ChessGameState extends State<ChessGame> {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: const Text('Pick a piece for promotion!'),
+                        actionsAlignment: MainAxisAlignment.spaceEvenly,
                         actions: <Widget>[
                           // button for rook
-                          ElevatedButton(
+                          MyElevatedButton(
                             onPressed: () {
                               setState(() {
                                 board[promoRow][promoCol] = null;
@@ -299,10 +298,10 @@ class _ChessGameState extends State<ChessGame> {
                               });
                               Navigator.of(context).pop();
                             },
-                            child: Image.asset('assets/black/rook.png'),
+                            pieceName: 'Rook',
                           ),
                           // button for queen
-                          ElevatedButton(
+                          MyElevatedButton(
                             onPressed: () {
                               setState(() {
                                 board[promoRow][promoCol] = null;
@@ -319,10 +318,10 @@ class _ChessGameState extends State<ChessGame> {
                               });
                               Navigator.of(context).pop();
                             },
-                            child: Image.asset('assets/black/queen.png'),
+                            pieceName: 'Queen',
                           ),
                           // button for knight
-                          ElevatedButton(
+                          MyElevatedButton(
                             onPressed: () {
                               setState(() {
                                 board[promoRow][promoCol] = null;
@@ -339,10 +338,10 @@ class _ChessGameState extends State<ChessGame> {
                               });
                               Navigator.of(context).pop();
                             },
-                            child: Image.asset('assets/black/knight.png'),
+                            pieceName: 'Knight',
                           ),
                           // button for bishop
-                          ElevatedButton(
+                          MyElevatedButton(
                             onPressed: () {
                               setState(() {
                                 board[promoRow][promoCol] = null;
@@ -359,7 +358,7 @@ class _ChessGameState extends State<ChessGame> {
                               });
                               Navigator.of(context).pop();
                             },
-                            child: Image.asset('assets/black/bishop.png'),
+                            pieceName: 'Bishop',
                           ),
                         ],
                       );
@@ -601,7 +600,7 @@ class _ChessGameState extends State<ChessGame> {
           );
 
           if (legalMoves.isNotEmpty) {
-            print('Legal moves exist for ${currentPiece.pieceName} at ($i,$j)');
+            print('legal moves exist for ${currentPiece.pieceName} at ($i,$j)');
             return false; // at least one legal move exists
           }
         }
@@ -609,7 +608,6 @@ class _ChessGameState extends State<ChessGame> {
     }
 
     // no legal moves
-    print('CHECKMATE CONFIRMED FOR ${isWhiteTurn ? 'WHITE' : 'BLACK'}');
     return true;
   }
 
