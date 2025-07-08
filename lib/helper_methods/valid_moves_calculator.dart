@@ -1,5 +1,6 @@
 import 'package:chess/helper_methods/piece_in_board.dart';
 import 'package:chess/helper_methods/chess_piece_class.dart';
+import 'package:chess/main.dart';
 
 List<List<int>> validMovesCalculator(
   int row,
@@ -202,43 +203,118 @@ List<List<int>> validMovesCalculator(
           }
         }
 
-        // for white short castle
-        if (isInBoard(r, c) &&
+        // white short castle
+        if (selectedPiece.isWhite &&
+            isShortCastlePossibleForWhite &&
             board[7][5] == null &&
             board[7][6] == null &&
-            isShortCastlePossibleForWhite &&
-            selectedPiece.isWhite) {
+            !isSquareAttacked(7, 4, false, board) &&
+            !isSquareAttacked(7, 5, false, board) &&
+            !isSquareAttacked(7, 6, false, board)) {
           pieceMoves.add(<int>[7, 6]);
-          pieceMoves.add(<int>[7, 5]);
-        } // for white long castle
-        else if (isInBoard(r, c) &&
+        }
+
+        // white long castle
+        if (selectedPiece.isWhite &&
+            isLongCastlePossibleForWhite &&
             board[7][1] == null &&
             board[7][2] == null &&
             board[7][3] == null &&
-            isLongCastlePossibleForWhite &&
-            selectedPiece.isWhite) {
+            !isSquareAttacked(7, 4, false, board) &&
+            !isSquareAttacked(7, 3, false, board) &&
+            !isSquareAttacked(7, 2, false, board)) {
           pieceMoves.add(<int>[7, 2]);
-          pieceMoves.add(<int>[7, 3]);
-        } // for black long castle
-        else if (isInBoard(r, c) &&
+        }
+
+        // black short castle
+        if (!selectedPiece.isWhite &&
+            isShortCastlePossibleForBlack &&
+            board[0][5] == null &&
+            board[0][6] == null &&
+            !isSquareAttacked(0, 4, true, board) &&
+            !isSquareAttacked(0, 5, true, board) &&
+            !isSquareAttacked(0, 6, true, board)) {
+          pieceMoves.add(<int>[0, 6]);
+        }
+
+        // Bblack long castle
+        if (!selectedPiece.isWhite &&
+            isLongCastlePossibleForBlack &&
             board[0][1] == null &&
             board[0][2] == null &&
             board[0][3] == null &&
-            isLongCastlePossibleForBlack &&
-            !selectedPiece.isWhite) {
+            !isSquareAttacked(0, 4, true, board) &&
+            !isSquareAttacked(0, 3, true, board) &&
+            !isSquareAttacked(0, 2, true, board)) {
           pieceMoves.add(<int>[0, 2]);
-          pieceMoves.add(<int>[0, 3]);
-        } // for black short castle
-        else if (isInBoard(r, c) &&
-            board[0][5] == null &&
-            board[0][6] == null &&
-            isShortCastlePossibleForBlack &&
-            !selectedPiece.isWhite) {
-          pieceMoves.add(<int>[0, 6]);
-          pieceMoves.add(<int>[0, 5]);
         }
+
+        // // for white short castle
+        // if (isInBoard(r, c) &&
+        //     board[7][5] == null &&
+        //     board[7][6] == null &&
+        //     isShortCastlePossibleForWhite &&
+        //     selectedPiece.isWhite) {
+        //   pieceMoves.add(<int>[7, 6]);
+        //   pieceMoves.add(<int>[7, 5]);
+        // } // for white long castle
+        // else if (isInBoard(r, c) &&
+        //     board[7][1] == null &&
+        //     board[7][2] == null &&
+        //     board[7][3] == null &&
+        //     isLongCastlePossibleForWhite &&
+        //     selectedPiece.isWhite) {
+        //   pieceMoves.add(<int>[7, 2]);
+        //   pieceMoves.add(<int>[7, 3]);
+        // } // for black long castle
+        // else if (isInBoard(r, c) &&
+        //     board[0][1] == null &&
+        //     board[0][2] == null &&
+        //     board[0][3] == null &&
+        //     isLongCastlePossibleForBlack &&
+        //     !selectedPiece.isWhite) {
+        //   pieceMoves.add(<int>[0, 2]);
+        //   pieceMoves.add(<int>[0, 3]);
+        // } // for black short castle
+        // else if (isInBoard(r, c) &&
+        //     board[0][5] == null &&
+        //     board[0][6] == null &&
+        //     isShortCastlePossibleForBlack &&
+        //     !selectedPiece.isWhite) {
+        //   pieceMoves.add(<int>[0, 6]);
+        //   pieceMoves.add(<int>[0, 5]);
+        // }
       }
       break;
   }
   return pieceMoves;
+}
+
+bool isSquareAttacked(
+  int row,
+  int col,
+  bool byWhite,
+  List<List<ChessPiece?>> board,
+) {
+  for (int r = 0; r < 8; r++) {
+    for (int c = 0; c < 8; c++) {
+      ChessPiece? piece = board[r][c];
+      if (piece != null && piece.isWhite == byWhite) {
+        List<List<int>> moves = validMovesCalculator(
+          r,
+          c,
+          piece,
+          board,
+          false,
+          false,
+          false,
+          false,
+        );
+        for (List<int> move in moves) {
+          if (move[0] == row && move[1] == col) return true;
+        }
+      }
+    }
+  }
+  return false;
 }

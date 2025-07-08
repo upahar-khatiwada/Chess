@@ -4,7 +4,6 @@ import 'package:chess/helper_methods/board_initializer.dart';
 import 'package:chess/helper_methods/chess_piece_class.dart';
 import 'package:chess/helper_methods/valid_moves_calculator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 void main() {
   runApp(const ChessGame());
@@ -46,247 +45,197 @@ class _ChessGameState extends State<ChessGame> {
   // variables to store king's position to track if its being checked
   List<int> whiteKingPos = <int>[7, 4];
   List<int> blackKingPos = <int>[0, 4];
-  bool isKingChecked = false;
   bool isWhiteKingChecked = false;
   bool isBlackKingChecked = false;
 
   void selectChessPiece(int row, int col) {
-    if (!isGameOver) {
-      setState(() {
-        // moves the piece
-        for (List<int> validMove in validMoves) {
-          if (validMove[0] == row && validMove[1] == col) {
-            if (selectedPiece != null &&
-                selectedPiece!.isWhite &&
-                selectedPiece!.pieceName == 'king' &&
-                sRow == 7 &&
-                sCol == 4 &&
-                !(row == 7 && (col == 6 || col == 2))) {
-              isShortCastlePossibleForWhite = isLongCastlePossibleForWhite =
-                  false;
-            } // for checking if white right rook moved
-            else if (selectedPiece != null &&
-                !selectedPiece!.isWhite &&
-                selectedPiece!.pieceName == 'rook' &&
-                sRow == 7 &&
-                sCol == 7 &&
-                (row != 7 || col != 7)) {
-              isShortCastlePossibleForWhite = false;
-            } // for checking if white left rook moved
-            else if (selectedPiece != null &&
-                selectedPiece!.isWhite &&
-                selectedPiece!.pieceName == 'rook' &&
-                sRow == 7 &&
-                sCol == 0 &&
-                (row != 7 || col != 0)) {
-              isLongCastlePossibleForWhite = false;
-            }
-
-            // short white castle
-            if (selectedPiece != null &&
-                selectedPiece!.isWhite &&
-                selectedPiece!.pieceName == 'king' &&
-                sRow == 7 &&
-                sCol == 4 &&
-                row == 7 &&
-                col == 6) {
-              board[7][6] = selectedPiece;
-              board[7][4] = null;
-              board[7][5] = board[7][7];
-              board[7][7] = null;
-
-              isShortCastlePossibleForWhite = isLongCastlePossibleForWhite =
-                  false;
-            }
-            // long castle white
-            else if (selectedPiece != null &&
-                selectedPiece!.isWhite &&
-                selectedPiece!.pieceName == 'king' &&
-                sRow == 7 &&
-                sCol == 4 &&
-                row == 7 &&
-                col == 2) {
-              board[7][2] = selectedPiece;
-              board[7][4] = null;
-              board[7][3] = board[7][0];
-              board[7][0] = null;
-
-              isShortCastlePossibleForWhite = isLongCastlePossibleForWhite =
-                  false;
-            }
-            // black king movement detection for castle possibility
-            else if (selectedPiece != null &&
-                !selectedPiece!.isWhite &&
-                selectedPiece!.pieceName == 'king' &&
-                sRow == 0 &&
-                sCol == 4 &&
-                !(row == 7 && (col == 6 || col == 2))) {
-              isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
-                  false;
-            } // for checking if black left rook moved
-            else if (selectedPiece != null &&
-                selectedPiece!.isWhite &&
-                selectedPiece!.pieceName == 'rook' &&
-                sRow == 0 &&
-                sCol == 0 &&
-                (row != 0 || col != 0)) {
-              isShortCastlePossibleForBlack = false;
-            } // for checking if black right rook moved
-            else if (selectedPiece != null &&
-                selectedPiece!.isWhite &&
-                selectedPiece!.pieceName == 'rook' &&
-                sRow == 0 &&
-                sCol == 7 &&
-                (row != 0 || col != 7)) {
-              isLongCastlePossibleForBlack = false;
-            } // short black castle
-            if (selectedPiece != null &&
-                !selectedPiece!.isWhite &&
-                selectedPiece!.pieceName == 'king' &&
-                sRow == 0 &&
-                sCol == 4 &&
-                row == 0 &&
-                col == 6) {
-              board[0][6] = selectedPiece;
-              board[0][4] = null;
-              board[0][5] = board[0][7];
-              board[0][7] = null;
-
-              isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
-                  false;
-            }
-            // long castle black
-            else if (selectedPiece != null &&
-                selectedPiece!.pieceName == 'king' &&
-                sRow == 0 &&
-                sCol == 4 &&
-                row == 0 &&
-                col == 2) {
-              board[0][2] = selectedPiece;
-              board[0][4] = null;
-              board[0][3] = board[0][0];
-              board[0][0] = null;
-
-              isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
-                  false;
-            } else {
-              board[row][col] = selectedPiece;
-              board[sRow][sCol] = null;
-
-              if (selectedPiece != null && selectedPiece!.pieceName == 'king') {
-                if (selectedPiece!.isWhite) {
-                  whiteKingPos = <int>[row, col];
-                } else {
-                  blackKingPos = <int>[row, col];
-                }
-              }
-
-              isWhiteKingChecked = kingInCheck(true);
-              isBlackKingChecked = kingInCheck(false);
-            }
-
-            selectedPiece = null;
-            sRow = sCol = -1;
-            validMoves.clear();
-
-            if (checkMate(isWhiteTurn)) {
-              isGameOver = true;
-              showDialog(
-                context: context,
-                builder: (BuildContext context) => AlertDialog(
-                  content: Text(isWhiteTurn ? 'White Wins!' : 'Black Wins'),
-                  contentPadding: const EdgeInsets.all(16),
-                  title: const Text(
-                    'Game Over!',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  actions: <Widget>[
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        initializeBoard(board);
-                        sRow = -1;
-                        sCol = -1;
-                        validMoves = <List<int>>[];
-                        isWhiteTurn = true;
-                        isShortCastlePossibleForWhite = true;
-                        isLongCastlePossibleForWhite = true;
-                        isShortCastlePossibleForBlack = true;
-                        isLongCastlePossibleForBlack = true;
-                        whiteKingPos = <int>[7, 4];
-                        blackKingPos = <int>[0, 4];
-                        isKingChecked = false;
-                        isWhiteKingChecked = false;
-                        isBlackKingChecked = false;
-                        validMoves.clear();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.greenAccent,
-                      ),
-                      child: const Text('Play Again!'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                      ),
-                      child: const Text('Exit!'),
-                    ),
-                  ],
-                ),
-              );
-            }
-
-            // switch turn
-            isWhiteTurn = !isWhiteTurn;
-            return;
+    if (isGameOver) return;
+    setState(() {
+      // moves the piece
+      for (List<int> validMove in validMoves) {
+        if (validMove[0] == row && validMove[1] == col) {
+          if (selectedPiece != null &&
+              selectedPiece!.isWhite &&
+              selectedPiece!.pieceName == 'king' &&
+              sRow == 7 &&
+              sCol == 4 &&
+              !(row == 7 && (col == 6 || col == 2))) {
+            isShortCastlePossibleForWhite = isLongCastlePossibleForWhite =
+                false;
+          } // for checking if white right rook moved
+          else if (selectedPiece != null &&
+              !selectedPiece!.isWhite &&
+              selectedPiece!.pieceName == 'rook' &&
+              sRow == 7 &&
+              sCol == 7 &&
+              (row != 7 || col != 7)) {
+            isShortCastlePossibleForWhite = false;
+          } // for checking if white left rook moved
+          else if (selectedPiece != null &&
+              selectedPiece!.isWhite &&
+              selectedPiece!.pieceName == 'rook' &&
+              sRow == 7 &&
+              sCol == 0 &&
+              (row != 7 || col != 0)) {
+            isLongCastlePossibleForWhite = false;
           }
-        }
 
-        if (board[row][col] != null &&
-            board[row][col]!.isWhite == isWhiteTurn) {
-          selectedPiece = board[row][col];
-          sRow = row;
-          sCol = col;
-          // only calculating valid moves for selected piece (row, col)
-          List<List<int>> rawMoves = validMovesCalculator(
-            row,
-            col,
-            selectedPiece,
-            board,
-            isShortCastlePossibleForWhite,
-            isLongCastlePossibleForWhite,
-            isShortCastlePossibleForBlack,
-            isLongCastlePossibleForBlack,
-          );
+          // short white castle
+          if (selectedPiece != null &&
+              selectedPiece!.isWhite &&
+              selectedPiece!.pieceName == 'king' &&
+              sRow == 7 &&
+              sCol == 4 &&
+              row == 7 &&
+              col == 6) {
+            board[7][6] = selectedPiece;
+            board[7][4] = null;
+            board[7][5] = board[7][7];
+            board[7][7] = null;
 
-          validMoves = filterLegalMoves(
-            rawMoves,
-            row,
-            col,
-            selectedPiece,
-            isWhiteTurn,
-          );
-        } else {
+            isShortCastlePossibleForWhite = isLongCastlePossibleForWhite =
+                false;
+          }
+          // long castle white
+          else if (selectedPiece != null &&
+              selectedPiece!.isWhite &&
+              selectedPiece!.pieceName == 'king' &&
+              sRow == 7 &&
+              sCol == 4 &&
+              row == 7 &&
+              col == 2) {
+            board[7][2] = selectedPiece;
+            board[7][4] = null;
+            board[7][3] = board[7][0];
+            board[7][0] = null;
+
+            isShortCastlePossibleForWhite = isLongCastlePossibleForWhite =
+                false;
+          }
+          // black king movement detection for castle possibility
+          else if (selectedPiece != null &&
+              !selectedPiece!.isWhite &&
+              selectedPiece!.pieceName == 'king' &&
+              sRow == 0 &&
+              sCol == 4 &&
+              !(row == 7 && (col == 6 || col == 2))) {
+            isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
+                false;
+          } // for checking if black left rook moved
+          else if (selectedPiece != null &&
+              selectedPiece!.isWhite &&
+              selectedPiece!.pieceName == 'rook' &&
+              sRow == 0 &&
+              sCol == 0 &&
+              (row != 0 || col != 0)) {
+            isShortCastlePossibleForBlack = false;
+          } // for checking if black right rook moved
+          else if (selectedPiece != null &&
+              selectedPiece!.isWhite &&
+              selectedPiece!.pieceName == 'rook' &&
+              sRow == 0 &&
+              sCol == 7 &&
+              (row != 0 || col != 7)) {
+            isLongCastlePossibleForBlack = false;
+          } // short black castle
+          if (selectedPiece != null &&
+              !selectedPiece!.isWhite &&
+              selectedPiece!.pieceName == 'king' &&
+              sRow == 0 &&
+              sCol == 4 &&
+              row == 0 &&
+              col == 6) {
+            board[0][6] = selectedPiece;
+            board[0][4] = null;
+            board[0][5] = board[0][7];
+            board[0][7] = null;
+
+            isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
+                false;
+          }
+          // long castle black
+          else if (selectedPiece != null &&
+              selectedPiece!.pieceName == 'king' &&
+              sRow == 0 &&
+              sCol == 4 &&
+              row == 0 &&
+              col == 2) {
+            board[0][2] = selectedPiece;
+            board[0][4] = null;
+            board[0][3] = board[0][0];
+            board[0][0] = null;
+
+            isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
+                false;
+          } else {
+            board[row][col] = selectedPiece;
+            board[sRow][sCol] = null;
+
+            if (selectedPiece != null && selectedPiece!.pieceName == 'king') {
+              if (selectedPiece!.isWhite) {
+                whiteKingPos = <int>[row, col];
+              } else {
+                blackKingPos = <int>[row, col];
+              }
+            }
+
+            isWhiteKingChecked = kingInCheck(true, whiteKingPos);
+            isBlackKingChecked = kingInCheck(false, blackKingPos);
+          }
+
           selectedPiece = null;
           sRow = sCol = -1;
           validMoves.clear();
+
+          // switch turn
+          isWhiteTurn = !isWhiteTurn;
+
+          if (checkMate(isWhiteTurn)) {
+            setState(() {
+              isGameOver = true;
+            });
+          }
+
+          return;
         }
-      });
-    }
+      }
+
+      if (board[row][col] != null && board[row][col]!.isWhite == isWhiteTurn) {
+        selectedPiece = board[row][col];
+        sRow = row;
+        sCol = col;
+        // only calculating valid moves for selected piece (row, col)
+        List<List<int>> rawMoves = validMovesCalculator(
+          row,
+          col,
+          selectedPiece,
+          board,
+          isShortCastlePossibleForWhite,
+          isLongCastlePossibleForWhite,
+          isShortCastlePossibleForBlack,
+          isLongCastlePossibleForBlack,
+        );
+
+        validMoves = filterLegalMoves(
+          rawMoves,
+          row,
+          col,
+          selectedPiece,
+          isWhiteTurn,
+        );
+      } else {
+        selectedPiece = null;
+        sRow = sCol = -1;
+        validMoves.clear();
+      }
+    });
   }
 
-  bool kingInCheck(bool whiteTurn) {
-    // getting current king's position
-    List<int> currentlyCheckedKingPosition = whiteTurn
-        ? whiteKingPos
-        : blackKingPos;
-
+  bool kingInCheck(bool whiteTurn, List<int> kingPos) {
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
-        if (board[i][j] != null && board[i][j]!.isWhite == !whiteTurn) {
-          // list that stores every enemy pieces ko moves
-          List<List<int>> enemeyPieceMoves = validMovesCalculator(
+        if (board[i][j] != null && board[i][j]!.isWhite != whiteTurn) {
+          List<List<int>> enemyMoves = validMovesCalculator(
             i,
             j,
             board[i][j],
@@ -297,10 +246,14 @@ class _ChessGameState extends State<ChessGame> {
             isLongCastlePossibleForBlack,
           );
 
-          if (enemeyPieceMoves.any(
-            (List<int> temp) =>
-                temp[0] == currentlyCheckedKingPosition[0] &&
-                temp[1] == currentlyCheckedKingPosition[1],
+          // for (List<int> move in enemyMoves) {
+          //   if (move[0] == kingPos[0] && move[1] == kingPos[1]) {
+          //     return true;
+          //   }
+          // }
+
+          if (enemyMoves.any(
+            (List<int> move) => move[0] == kingPos[0] && move[1] == kingPos[1],
           )) {
             return true;
           }
@@ -310,9 +263,8 @@ class _ChessGameState extends State<ChessGame> {
     return false;
   }
 
-  // for real valid moves
   List<List<int>> filterLegalMoves(
-    List<List<int>> rawMoves,
+    List<List<int>> rawMovess,
     int row,
     int col,
     ChessPiece? selectedPiece,
@@ -320,26 +272,23 @@ class _ChessGameState extends State<ChessGame> {
   ) {
     List<List<int>> legalMoves = <List<int>>[];
 
-    for (List<int> move in rawMoves) {
+    for (List<int> move in rawMovess) {
       int endRow = move[0];
       int endCol = move[1];
 
-      // saving destination board's state for restoring later after simulation
-      ChessPiece? boardState = board[endRow][endCol];
+      // saving current board state
+      ChessPiece? capturedPiece = board[endRow][endCol];
+      ChessPiece? pieceToMove = selectedPiece;
 
-      // testing the new moves
-      board[endRow][endCol] =
-          selectedPiece; // places current selected piece at a position
-      board[row][col] = null; // removes it from current position
+      // simulating the move
+      board[endRow][endCol] = pieceToMove;
+      board[row][col] = null;
 
-      // if selected piece is king then store new position else use king's current position
-      List<int> originalKingPos =
-          (selectedPiece != null && selectedPiece.pieceName == 'king')
-          ? <int>[endRow, endCol]
-          : (whiteTurn ? whiteKingPos : blackKingPos);
+      // saving current king's position
+      List<int> originalKingPos = whiteTurn ? whiteKingPos : blackKingPos;
+      bool movedKing = pieceToMove?.pieceName == 'king';
 
-      // updates the king's position if selected piece is king
-      if (selectedPiece != null && selectedPiece.pieceName == 'king') {
+      if (movedKing) {
         if (whiteTurn) {
           whiteKingPos = <int>[endRow, endCol];
         } else {
@@ -347,24 +296,27 @@ class _ChessGameState extends State<ChessGame> {
         }
       }
 
-      // checking if the simulated move puts king in check
-      bool isKingInCheck = kingInCheck(whiteTurn);
+      // checking if king is in check after the move
+      bool isStillInCheck = kingInCheck(
+        whiteTurn,
+        whiteTurn ? whiteKingPos : blackKingPos,
+      );
 
-      // restoring the original board
-      board[row][col] = selectedPiece;
-      board[endRow][endCol] = boardState;
+      // if move is safe add it to the list
+      if (!isStillInCheck) {
+        legalMoves.add(<int>[endRow, endCol]);
+      }
 
-      // moving king if the selected piece was king back to its original position
-      if (selectedPiece != null && selectedPiece.pieceName == 'king') {
+      // restore board and king position
+      board[row][col] = pieceToMove;
+      board[endRow][endCol] = capturedPiece;
+
+      if (movedKing) {
         if (whiteTurn) {
           whiteKingPos = originalKingPos;
         } else {
           blackKingPos = originalKingPos;
         }
-      }
-
-      if (!isKingInCheck) {
-        legalMoves.add(<int>[endRow, endCol]);
       }
     }
 
@@ -372,8 +324,9 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   bool checkMate(bool isWhiteTurn) {
+    print('Checking checkmate for ${isWhiteTurn ? 'White' : 'Black'}');
     // king not in check so false
-    if (!kingInCheck(isWhiteTurn)) {
+    if (!kingInCheck(isWhiteTurn, isWhiteTurn ? whiteKingPos : blackKingPos)) {
       return false;
     }
 
@@ -403,6 +356,7 @@ class _ChessGameState extends State<ChessGame> {
           );
 
           if (legalMoves.isNotEmpty) {
+            print('Legal moves exist for ${currentPiece.pieceName} at ($i,$j)');
             return false; // at least one legal move exists
           }
         }
@@ -410,13 +364,42 @@ class _ChessGameState extends State<ChessGame> {
     }
 
     // no legal moves
+    print('CHECKMATE CONFIRMED FOR ${isWhiteTurn ? 'WHITE' : 'BLACK'}');
     return true;
+  }
+
+  void resetGame() {
+    setState(() {
+      board = initializeBoard(board);
+      sRow = -1;
+      sCol = -1;
+      validMoves = <List<int>>[];
+      isWhiteTurn = true;
+      isShortCastlePossibleForWhite = true;
+      isLongCastlePossibleForWhite = true;
+      isShortCastlePossibleForBlack = true;
+      isLongCastlePossibleForBlack = true;
+      whiteKingPos = <int>[7, 4];
+      blackKingPos = <int>[0, 4];
+      isWhiteKingChecked = false;
+      isBlackKingChecked = false;
+      isGameOver = false;
+    });
   }
 
   @override
   void initState() {
     super.initState();
     board = initializeBoard(board);
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (checkMate(isWhiteTurn)) {
+    //     setState(() {
+    //       isGameOver = true;
+    //     });
+    //     print('mate from init state');
+    //   }
+    // });
   }
 
   @override

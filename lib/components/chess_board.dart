@@ -21,7 +21,7 @@ class ChessBoard extends StatelessWidget {
   final List<int> whiteKingPosition;
   final List<int> blackKingPosition;
 
-  ChessBoard({
+  const ChessBoard({
     super.key,
     required this.index,
     required this.piece,
