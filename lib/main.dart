@@ -2,7 +2,6 @@ import 'package:chess/components/chess_board.dart';
 import 'package:chess/constants/project_constants.dart';
 import 'package:chess/helper_methods/board_initializer.dart';
 import 'package:chess/helper_methods/chess_piece_class.dart';
-import 'package:chess/helper_methods/show_dialog.dart';
 import 'package:chess/helper_methods/valid_moves_calculator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -170,14 +169,208 @@ class _ChessGameState extends State<ChessGame> {
 
             isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
                 false;
-          }
-          //  else if (selectedPiece != null &&
-          //     selectedPiece!.pieceName == 'pawn' &&
-          //     selectedPiece!.isWhite &&
-          //     sRow == 1 &&
-          //     row == 0) {
-          // }
-          else {
+          } else if (selectedPiece != null &&
+              selectedPiece!.pieceName == 'pawn' &&
+              ((sRow == 1 && row == 0) || (sRow == 6 && row == 7))) {
+            final int promoRow = sRow;
+            final int promoCol = sCol;
+
+            if (selectedPiece!.isWhite) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                final BuildContext? ctx = navigatorKey.currentState?.context;
+                if (ctx != null) {
+                  showDialog<void>(
+                    context: ctx,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Pick a piece for promotion!'),
+                        actions: <Widget>[
+                          // button for rook
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                board[promoRow][promoCol] = null;
+                                board[row][col] = ChessPiece(
+                                  pieceName: 'rook',
+                                  isWhite: true,
+                                  imagePath: 'assets/white/rook.png',
+                                );
+
+                                selectedPiece = null;
+                                sRow = sCol = -1;
+                                validMoves.clear();
+                                isWhiteTurn = !isWhiteTurn;
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            child: Image.asset('assets/white/rook.png'),
+                          ),
+                          // button for queen
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                board[promoRow][promoCol] = null;
+                                board[row][col] = ChessPiece(
+                                  pieceName: 'queen',
+                                  isWhite: true,
+                                  imagePath: 'assets/white/queen.png',
+                                );
+
+                                selectedPiece = null;
+                                sRow = sCol = -1;
+                                validMoves.clear();
+                                isWhiteTurn = !isWhiteTurn;
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            child: Image.asset('assets/white/queen.png'),
+                          ),
+                          // button for knight
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                board[promoRow][promoCol] = null;
+                                board[row][col] = ChessPiece(
+                                  pieceName: 'knight',
+                                  isWhite: true,
+                                  imagePath: 'assets/white/knight.png',
+                                );
+
+                                selectedPiece = null;
+                                sRow = sCol = -1;
+                                validMoves.clear();
+                                isWhiteTurn = !isWhiteTurn;
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            child: Image.asset('assets/white/knight.png'),
+                          ),
+                          // button for bishop
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                board[promoRow][promoCol] = null;
+                                board[row][col] = ChessPiece(
+                                  pieceName: 'bishop',
+                                  isWhite: true,
+                                  imagePath: 'assets/white/bishop.png',
+                                );
+
+                                selectedPiece = null;
+                                sRow = sCol = -1;
+                                validMoves.clear();
+                                isWhiteTurn = !isWhiteTurn;
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            child: Image.asset('assets/white/bishop.png'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              });
+            } else if (!selectedPiece!.isWhite) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                final BuildContext? ctx = navigatorKey.currentState?.context;
+                if (ctx != null) {
+                  showDialog<void>(
+                    context: ctx,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Pick a piece for promotion!'),
+                        actions: <Widget>[
+                          // button for rook
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                board[promoRow][promoCol] = null;
+                                board[row][col] = ChessPiece(
+                                  pieceName: 'rook',
+                                  isWhite: false,
+                                  imagePath: 'assets/black/rook.png',
+                                );
+
+                                selectedPiece = null;
+                                sRow = sCol = -1;
+                                validMoves.clear();
+                                isWhiteTurn = !isWhiteTurn;
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            child: Image.asset('assets/black/rook.png'),
+                          ),
+                          // button for queen
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                board[promoRow][promoCol] = null;
+                                board[row][col] = ChessPiece(
+                                  pieceName: 'queen',
+                                  isWhite: false,
+                                  imagePath: 'assets/black/queen.png',
+                                );
+
+                                selectedPiece = null;
+                                sRow = sCol = -1;
+                                validMoves.clear();
+                                isWhiteTurn = !isWhiteTurn;
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            child: Image.asset('assets/black/queen.png'),
+                          ),
+                          // button for knight
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                board[promoRow][promoCol] = null;
+                                board[row][col] = ChessPiece(
+                                  pieceName: 'knight',
+                                  isWhite: false,
+                                  imagePath: 'assets/black/knight.png',
+                                );
+
+                                selectedPiece = null;
+                                sRow = sCol = -1;
+                                validMoves.clear();
+                                isWhiteTurn = !isWhiteTurn;
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            child: Image.asset('assets/black/knight.png'),
+                          ),
+                          // button for bishop
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                board[promoRow][promoCol] = null;
+                                board[row][col] = ChessPiece(
+                                  pieceName: 'bishop',
+                                  isWhite: false,
+                                  imagePath: 'assets/black/bishop.png',
+                                );
+
+                                selectedPiece = null;
+                                sRow = sCol = -1;
+                                validMoves.clear();
+                                isWhiteTurn = !isWhiteTurn;
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            child: Image.asset('assets/black/bishop.png'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              });
+            }
+
+            return;
+          } else {
             board[row][col] = selectedPiece;
             board[sRow][sCol] = null;
 
@@ -205,7 +398,6 @@ class _ChessGameState extends State<ChessGame> {
               isGameOver = true;
             });
 
-            // Delay dialog until after the current frame
             WidgetsBinding.instance.addPostFrameCallback((_) {
               final BuildContext? ctx = navigatorKey.currentState?.context;
               // print('Navigator context: $ctx');
@@ -296,6 +488,7 @@ class _ChessGameState extends State<ChessGame> {
             isLongCastlePossibleForWhite,
             isShortCastlePossibleForBlack,
             isLongCastlePossibleForBlack,
+            forCheck: true,
           );
 
           // for (List<int> move in enemyMoves) {
@@ -376,7 +569,7 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   bool checkMate(bool isWhiteTurn) {
-    // print('checking checkmate for ${isWhiteTurn ? 'white' : 'black'}');
+    print('checking checkmate for ${isWhiteTurn ? 'white' : 'black'}');
     // king not in check so false
     if (!kingInCheck(isWhiteTurn, isWhiteTurn ? whiteKingPos : blackKingPos)) {
       return false;

@@ -9,48 +9,81 @@ List<List<int>> validMovesCalculator(
   bool isShortCastlePossibleForWhite,
   bool isLongCastlePossibleForWhite,
   bool isShortCastlePossibleForBlack,
-  bool isLongCastlePossibleForBlack,
-) {
+  bool isLongCastlePossibleForBlack, {
+  bool forCheck = false,
+}) {
   int direction = selectedPiece!.isWhite ? -1 : 1;
   List<List<int>> pieceMoves = <List<int>>[];
 
   switch (selectedPiece.pieceName) {
     case 'pawn':
-      // forward 1
-      if (isInBoard(row + direction, col) &&
+      bool isWhite = selectedPiece.isWhite;
+
+      // Forward 1
+      if (!forCheck &&
+          isInBoard(row + direction, col) &&
           board[row + direction][col] == null) {
         pieceMoves.add(<int>[row + direction, col]);
       }
 
-      // 2 squares forward
-      if ((row == 1 && !selectedPiece.isWhite) ||
-          (row == 6 && selectedPiece.isWhite)) {
-        if (isInBoard(row + 2 * direction, col) &&
-            board[row + direction][col] == null &&
-            board[row + 2 * direction][col] == null) {
-          pieceMoves.add(<int>[row + 2 * direction, col]);
+      // Forward 2 (initial move)
+      if (!forCheck &&
+          ((row == 1 && !isWhite) || (row == 6 && isWhite)) &&
+          board[row + direction][col] == null &&
+          board[row + 2 * direction][col] == null) {
+        pieceMoves.add(<int>[row + 2 * direction, col]);
+      }
+
+      // Diagonal captures or threats
+      for (int dx in <int>[-1, 1]) {
+        int newRow = row + direction;
+        int newCol = col + dx;
+        if (isInBoard(newRow, newCol)) {
+          if (forCheck ||
+              (board[newRow][newCol] != null &&
+                  board[newRow][newCol]!.isWhite != isWhite)) {
+            pieceMoves.add(<int>[newRow, newCol]);
+          }
         }
       }
-
-      // variable to store current piece's color to fix the bug
-      // where a same color pawn could diagonally capture other same color pawn
-      bool isWhite = board[row][col]!.isWhite;
-
-      // diagonal capture for col + 1
-      if (isInBoard(row + direction, col + 1) &&
-          board[row + direction][col + 1] != null &&
-          board[row + direction][col + 1]!.isWhite != isWhite) {
-        pieceMoves.add(<int>[row + direction, col + 1]);
-      }
-
-      // diagonal capture for col - 1
-      if (isInBoard(row + direction, col - 1) &&
-          board[row + direction][col - 1] != null &&
-          board[row + direction][col - 1]!.isWhite != isWhite) {
-        pieceMoves.add(<int>[row + direction, col - 1]);
-      }
-
       break;
+
+    // case 'pawn':
+    //   // forward 1
+    //   if (isInBoard(row + direction, col) &&
+    //       board[row + direction][col] == null) {
+    //     pieceMoves.add(<int>[row + direction, col]);
+    //   }
+
+    //   // 2 squares forward
+    //   if ((row == 1 && !selectedPiece.isWhite) ||
+    //       (row == 6 && selectedPiece.isWhite)) {
+    //     if (isInBoard(row + 2 * direction, col) &&
+    //         board[row + direction][col] == null &&
+    //         board[row + 2 * direction][col] == null) {
+    //       pieceMoves.add(<int>[row + 2 * direction, col]);
+    //     }
+    //   }
+
+    //   // variable to store current piece's color to fix the bug
+    //   // where a same color pawn could diagonally capture other same color pawn
+    //   bool isWhite = board[row][col]!.isWhite;
+
+    //   // diagonal capture for col + 1
+    //   if (isInBoard(row + direction, col + 1) &&
+    //       board[row + direction][col + 1] != null &&
+    //       board[row + direction][col + 1]!.isWhite != isWhite) {
+    //     pieceMoves.add(<int>[row + direction, col + 1]);
+    //   }
+
+    //   // diagonal capture for col - 1
+    //   if (isInBoard(row + direction, col - 1) &&
+    //       board[row + direction][col - 1] != null &&
+    //       board[row + direction][col - 1]!.isWhite != isWhite) {
+    //     pieceMoves.add(<int>[row + direction, col - 1]);
+    //   }
+
+    //   break;
 
     case 'bishop':
       List<List<int>> directions = <List<int>>[
@@ -308,6 +341,7 @@ bool isSquareAttacked(
           false,
           false,
           false,
+          forCheck: true
         );
         for (List<int> move in moves) {
           if (move[0] == row && move[1] == col) return true;
