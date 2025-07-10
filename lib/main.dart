@@ -64,15 +64,24 @@ class _ChessGameState extends State<ChessGame> {
               sRow == 7 &&
               sCol == 4 &&
               !(row == 7 && (col == 6 || col == 2))) {
+            // actually moving the king
+            board[row][col] = selectedPiece;
+            board[sRow][sCol] = null;
+
+            whiteKingPos = <int>[row, col];
+
             isShortCastlePossibleForWhite = isLongCastlePossibleForWhite =
                 false;
           } // for checking if white right rook moved
           else if (selectedPiece != null &&
-              !selectedPiece!.isWhite &&
+              selectedPiece!.isWhite &&
               selectedPiece!.pieceName == 'rook' &&
               sRow == 7 &&
               sCol == 7 &&
               (row != 7 || col != 7)) {
+            board[row][col] = selectedPiece;
+            board[sRow][sCol] = null;
+
             isShortCastlePossibleForWhite = false;
           } // for checking if white left rook moved
           else if (selectedPiece != null &&
@@ -81,6 +90,9 @@ class _ChessGameState extends State<ChessGame> {
               sRow == 7 &&
               sCol == 0 &&
               (row != 7 || col != 0)) {
+            board[row][col] = selectedPiece;
+            board[sRow][sCol] = null;
+
             isLongCastlePossibleForWhite = false;
           }
           // short white castle
@@ -122,24 +134,34 @@ class _ChessGameState extends State<ChessGame> {
               sRow == 0 &&
               sCol == 4 &&
               !(row == 7 && (col == 6 || col == 2))) {
+            board[row][col] = selectedPiece;
+            board[sRow][sCol] = null;
+
+            blackKingPos = <int>[row, col];
             isShortCastlePossibleForBlack = isLongCastlePossibleForBlack =
                 false;
           } // for checking if black left rook moved
           else if (selectedPiece != null &&
-              selectedPiece!.isWhite &&
+              !selectedPiece!.isWhite &&
               selectedPiece!.pieceName == 'rook' &&
               sRow == 0 &&
               sCol == 0 &&
               (row != 0 || col != 0)) {
-            isShortCastlePossibleForBlack = false;
+            board[row][col] = selectedPiece;
+            board[sRow][sCol] = null;
+
+            isLongCastlePossibleForBlack = false;
           } // for checking if black right rook moved
           else if (selectedPiece != null &&
-              selectedPiece!.isWhite &&
+              !selectedPiece!.isWhite &&
               selectedPiece!.pieceName == 'rook' &&
               sRow == 0 &&
               sCol == 7 &&
               (row != 0 || col != 7)) {
-            isLongCastlePossibleForBlack = false;
+            board[row][col] = selectedPiece;
+            board[sRow][sCol] = null;
+
+            isShortCastlePossibleForBlack = false;
           } // short black castle
           else if (selectedPiece != null &&
               !selectedPiece!.isWhite &&
@@ -176,6 +198,7 @@ class _ChessGameState extends State<ChessGame> {
             final int promoRow = sRow;
             final int promoCol = sCol;
 
+            // pawn promotion block
             if (selectedPiece!.isWhite) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 final BuildContext? ctx = navigatorKey.currentState?.context;
@@ -370,17 +393,18 @@ class _ChessGameState extends State<ChessGame> {
 
             return;
           } else {
+            // piece moving block
+            print('in the else block!');
             board[row][col] = selectedPiece;
             board[sRow][sCol] = null;
 
-            if (selectedPiece != null && selectedPiece!.pieceName == 'king') {
+            if (selectedPiece!.pieceName == 'king') {
               if (selectedPiece!.isWhite) {
                 whiteKingPos = <int>[row, col];
               } else {
                 blackKingPos = <int>[row, col];
               }
             }
-
             isWhiteKingChecked = kingInCheck(true, whiteKingPos);
             isBlackKingChecked = kingInCheck(false, blackKingPos);
           }
@@ -471,7 +495,7 @@ class _ChessGameState extends State<ChessGame> {
         sRow = sCol = -1;
         validMoves.clear();
       }
-    });
+    }); // end of setState
   }
 
   bool kingInCheck(bool whiteTurn, List<int> kingPos) {
@@ -521,7 +545,8 @@ class _ChessGameState extends State<ChessGame> {
       int endCol = move[1];
 
       // saving current board state
-      ChessPiece? capturedPiece = board[endRow][endCol];
+      ChessPiece? capturedPiece =
+          board[endRow][endCol]; // piece to capture if there is any
       ChessPiece? pieceToMove = selectedPiece;
 
       // simulating the move
@@ -600,7 +625,10 @@ class _ChessGameState extends State<ChessGame> {
           );
 
           if (legalMoves.isNotEmpty) {
-            print('legal moves exist for ${currentPiece.pieceName} at ($i,$j)');
+            print(legalMoves);
+            print(
+              'legal moves exist for ${currentPiece.pieceName} at $legalMoves',
+            );
             return false; // at least one legal move exists
           }
         }
@@ -662,6 +690,7 @@ class _ChessGameState extends State<ChessGame> {
                 child: AspectRatio(
                   aspectRatio: 1,
                   child: GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: 64,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
