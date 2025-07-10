@@ -9,6 +9,8 @@ import 'package:flutter/services.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+List<ChessPiece?> capturedWhitePiece = <ChessPiece?>[];
+List<ChessPiece?> capturedBlackPiece = <ChessPiece?>[];
 void main() {
   runApp(const ChessGame());
 }
@@ -65,6 +67,13 @@ class _ChessGameState extends State<ChessGame> {
               sCol == 4 &&
               !(row == 7 && (col == 6 || col == 2))) {
             // actually moving the king
+            if (board[row][col] != null) {
+              if (board[row][col]!.isWhite) {
+                capturedWhitePiece.add(board[row][col]);
+              } else {
+                capturedBlackPiece.add(board[row][col]);
+              }
+            }
             board[row][col] = selectedPiece;
             board[sRow][sCol] = null;
 
@@ -79,6 +88,13 @@ class _ChessGameState extends State<ChessGame> {
               sRow == 7 &&
               sCol == 7 &&
               (row != 7 || col != 7)) {
+            if (board[row][col] != null) {
+              if (board[row][col]!.isWhite) {
+                capturedWhitePiece.add(board[row][col]);
+              } else {
+                capturedBlackPiece.add(board[row][col]);
+              }
+            }
             board[row][col] = selectedPiece;
             board[sRow][sCol] = null;
 
@@ -90,6 +106,13 @@ class _ChessGameState extends State<ChessGame> {
               sRow == 7 &&
               sCol == 0 &&
               (row != 7 || col != 0)) {
+            if (board[row][col] != null) {
+              if (board[row][col]!.isWhite) {
+                capturedWhitePiece.add(board[row][col]);
+              } else {
+                capturedBlackPiece.add(board[row][col]);
+              }
+            }
             board[row][col] = selectedPiece;
             board[sRow][sCol] = null;
 
@@ -134,6 +157,13 @@ class _ChessGameState extends State<ChessGame> {
               sRow == 0 &&
               sCol == 4 &&
               !(row == 7 && (col == 6 || col == 2))) {
+            if (board[row][col] != null) {
+              if (board[row][col]!.isWhite) {
+                capturedWhitePiece.add(board[row][col]);
+              } else {
+                capturedBlackPiece.add(board[row][col]);
+              }
+            }
             board[row][col] = selectedPiece;
             board[sRow][sCol] = null;
 
@@ -147,6 +177,13 @@ class _ChessGameState extends State<ChessGame> {
               sRow == 0 &&
               sCol == 0 &&
               (row != 0 || col != 0)) {
+            if (board[row][col] != null) {
+              if (board[row][col]!.isWhite) {
+                capturedWhitePiece.add(board[row][col]);
+              } else {
+                capturedBlackPiece.add(board[row][col]);
+              }
+            }
             board[row][col] = selectedPiece;
             board[sRow][sCol] = null;
 
@@ -158,6 +195,13 @@ class _ChessGameState extends State<ChessGame> {
               sRow == 0 &&
               sCol == 7 &&
               (row != 0 || col != 7)) {
+            if (board[row][col] != null) {
+              if (board[row][col]!.isWhite) {
+                capturedWhitePiece.add(board[row][col]);
+              } else {
+                capturedBlackPiece.add(board[row][col]);
+              }
+            }
             board[row][col] = selectedPiece;
             board[sRow][sCol] = null;
 
@@ -395,6 +439,13 @@ class _ChessGameState extends State<ChessGame> {
           } else {
             // piece moving block
             print('in the else block!');
+            if (board[row][col] != null) {
+              if (board[row][col]!.isWhite) {
+                capturedWhitePiece.add(board[row][col]);
+              } else {
+                capturedBlackPiece.add(board[row][col]);
+              }
+            }
             board[row][col] = selectedPiece;
             board[sRow][sCol] = null;
 
@@ -625,10 +676,7 @@ class _ChessGameState extends State<ChessGame> {
           );
 
           if (legalMoves.isNotEmpty) {
-            print(legalMoves);
-            print(
-              'legal moves exist for ${currentPiece.pieceName} at $legalMoves',
-            );
+            print('$legalMoves for ${currentPiece.pieceName}');
             return false; // at least one legal move exists
           }
         }
@@ -683,59 +731,81 @@ class _ChessGameState extends State<ChessGame> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Center(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
-                width: double.maxFinite,
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 64,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 8,
-                        ),
-                    itemBuilder: (BuildContext context, int index) {
-                      int row = index ~/ 8;
-                      int col = index % 8;
-                      ChessPiece? piece = board[row][col];
-                      bool isMoveValid = false;
-
-                      // highlights the current selected piece's valid move
-                      for (List<int> validMove in validMoves) {
-                        if (validMove[0] == row && validMove[1] == col) {
-                          isMoveValid = true;
-                        }
-                      }
-
-                      return ChessBoard(
-                        index: index,
-                        piece: piece,
-                        isPieceSelected: sRow == row && sCol == col,
-                        onTap: () => selectChessPiece(row, col),
-
-                        isMoveValid: isMoveValid,
-                        board: board,
-                        row: row,
-                        col: col,
-                        currentlySelectedPiece: selectedPiece,
-                        isLongCastlePossibleForWhite:
-                            isLongCastlePossibleForWhite,
-                        isShortCastlePossibleForWhite:
-                            isShortCastlePossibleForWhite,
-                        isLongCastlePossibleForBlack:
-                            isLongCastlePossibleForBlack,
-                        isShortCastlePossibleForBlack:
-                            isShortCastlePossibleForBlack,
-                        isBlackKingChecked: isBlackKingChecked,
-                        isWhiteKingChecked: isWhiteKingChecked,
-                        whiteKingPosition: whiteKingPos,
-                        blackKingPosition: blackKingPos,
-                      );
-                    },
-                  ),
+            Expanded(
+              flex: 1,
+              child: GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 8,
                 ),
+                itemCount: capturedWhitePiece.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Image.asset(capturedWhitePiece[index]!.imagePath);
+                },
+              ),
+            ),
+            Expanded(
+              flex: 3,
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: 64,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 8,
+                  ),
+                  itemBuilder: (BuildContext context, int index) {
+                    int row = index ~/ 8;
+                    int col = index % 8;
+                    ChessPiece? piece = board[row][col];
+                    bool isMoveValid = false;
+
+                    // highlights the current selected piece's valid move
+                    for (List<int> validMove in validMoves) {
+                      if (validMove[0] == row && validMove[1] == col) {
+                        isMoveValid = true;
+                      }
+                    }
+
+                    return ChessBoard(
+                      index: index,
+                      piece: piece,
+                      isPieceSelected: sRow == row && sCol == col,
+                      onTap: () => selectChessPiece(row, col),
+
+                      isMoveValid: isMoveValid,
+                      board: board,
+                      row: row,
+                      col: col,
+                      currentlySelectedPiece: selectedPiece,
+                      isLongCastlePossibleForWhite:
+                          isLongCastlePossibleForWhite,
+                      isShortCastlePossibleForWhite:
+                          isShortCastlePossibleForWhite,
+                      isLongCastlePossibleForBlack:
+                          isLongCastlePossibleForBlack,
+                      isShortCastlePossibleForBlack:
+                          isShortCastlePossibleForBlack,
+                      isBlackKingChecked: isBlackKingChecked,
+                      isWhiteKingChecked: isWhiteKingChecked,
+                      whiteKingPosition: whiteKingPos,
+                      blackKingPosition: blackKingPos,
+                    );
+                  },
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 8,
+                ),
+                itemCount: capturedBlackPiece.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Image.asset(capturedBlackPiece[index]!.imagePath);
+                },
               ),
             ),
           ],

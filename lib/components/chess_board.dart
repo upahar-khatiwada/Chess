@@ -52,7 +52,7 @@ class ChessBoard extends StatelessWidget {
       if (enemyPiece != null &&
           currentlySelectedPiece != null &&
           enemyPiece.isWhite != currentlySelectedPiece!.isWhite) {
-        squareColor = Colors.red;
+        squareColor = captureColor;
       } else {
         squareColor = possibleMovesColor;
       }
@@ -68,7 +68,7 @@ class ChessBoard extends StatelessWidget {
             !piece!.isWhite &&
             row == blackKingPosition[0] &&
             col == blackKingPosition[1])) {
-      squareColor = Colors.redAccent;
+      squareColor = checkColor;
     } else {
       squareColor = (index % 8 + (index / 8).toInt()) % 2 == 0
           ? whiteSquare
@@ -96,7 +96,7 @@ class ChessBoard extends StatelessWidget {
       if (targetPiece != null &&
           currentlySelectedPiece != null &&
           targetPiece.isWhite != currentlySelectedPiece!.isWhite) {
-        return Colors.red;
+        return Colors.white30;
       } else {
         return Colors.black;
       }

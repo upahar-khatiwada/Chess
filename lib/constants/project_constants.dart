@@ -5,3 +5,5 @@ Color? blackSquare = Colors.grey[600];
 Color? bgColor = Colors.grey[400];
 Color? pieceSelectedColor = Colors.blue;
 Color? possibleMovesColor = Colors.greenAccent;
+Color? checkColor = Colors.deepPurpleAccent;
+Color? captureColor = Colors.redAccent;
