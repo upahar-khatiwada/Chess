@@ -456,13 +456,16 @@ class _ChessGameState extends State<ChessGame> {
                 blackKingPos = <int>[row, col];
               }
             }
-            isWhiteKingChecked = kingInCheck(true, whiteKingPos);
-            isBlackKingChecked = kingInCheck(false, blackKingPos);
+            // isWhiteKingChecked = kingInCheck(true, whiteKingPos);
+            // isBlackKingChecked = kingInCheck(false, blackKingPos);
           }
 
           selectedPiece = null;
           sRow = sCol = -1;
           validMoves.clear();
+
+          isWhiteKingChecked = kingInCheck(true, whiteKingPos);
+          isBlackKingChecked = kingInCheck(false, blackKingPos);
 
           // switch turn
           isWhiteTurn = !isWhiteTurn;
