@@ -54,6 +54,9 @@ class _ChessGameState extends State<ChessGame> {
   bool isWhiteKingChecked = false;
   bool isBlackKingChecked = false;
 
+  // for En Passant
+  List<int>? enPassantSquare;
+
   void selectChessPiece(int row, int col) {
     if (isGameOver) return;
     setState(() {
@@ -436,6 +439,30 @@ class _ChessGameState extends State<ChessGame> {
             }
 
             return;
+          } // handling En Passant Logic
+          else if (selectedPiece!.pieceName == 'pawn' &&
+              enPassantSquare != null &&
+              row == enPassantSquare![0] &&
+              col == enPassantSquare![1] &&
+              board[row][col] == null) {
+            // if white killed black pawn by en passant,
+            // captured black pawn is at row - 1
+            int capturedRow = selectedPiece!.isWhite ? row + 1 : row - 1;
+            print('Captured row: $capturedRow');
+            ChessPiece? capturedPawn = board[capturedRow][col];
+
+            board[capturedRow][col] = null;
+
+            board[row][col] = selectedPiece;
+            board[sRow][sCol] = null;
+
+            if (capturedPawn != null) {
+              if (capturedPawn.isWhite) {
+                capturedWhitePiece.add(capturedPawn);
+              } else {
+                capturedBlackPiece.add(capturedPawn);
+              }
+            }
           } else {
             // piece moving block
             print('in the else block!');
@@ -448,6 +475,17 @@ class _ChessGameState extends State<ChessGame> {
             }
             board[row][col] = selectedPiece;
             board[sRow][sCol] = null;
+
+            // absolute difference of sRow and row should always be 2 as it moves
+            // 2 squares forward at this condition only
+            if (selectedPiece!.pieceName == 'pawn' && (sRow - row).abs() == 2) {
+              enPassantSquare = <int>[
+                (sRow + row) ~/ 2,
+                col,
+              ]; // adding the row between sRow and row
+            } else {
+              enPassantSquare = null;
+            }
 
             if (selectedPiece!.pieceName == 'king') {
               if (selectedPiece!.isWhite) {
@@ -535,6 +573,7 @@ class _ChessGameState extends State<ChessGame> {
           isLongCastlePossibleForWhite,
           isShortCastlePossibleForBlack,
           isLongCastlePossibleForBlack,
+          enPassantSquare,
         );
 
         validMoves = filterLegalMoves(
@@ -565,6 +604,7 @@ class _ChessGameState extends State<ChessGame> {
             isLongCastlePossibleForWhite,
             isShortCastlePossibleForBlack,
             isLongCastlePossibleForBlack,
+            enPassantSquare,
             forCheck: true,
           );
 
@@ -668,6 +708,7 @@ class _ChessGameState extends State<ChessGame> {
             isLongCastlePossibleForWhite,
             isShortCastlePossibleForBlack,
             isLongCastlePossibleForBlack,
+            enPassantSquare,
           );
 
           List<List<int>> legalMoves = filterLegalMoves(
@@ -706,6 +747,7 @@ class _ChessGameState extends State<ChessGame> {
       isWhiteKingChecked = false;
       isBlackKingChecked = false;
       isGameOver = false;
+      enPassantSquare = null;
     });
   }
 

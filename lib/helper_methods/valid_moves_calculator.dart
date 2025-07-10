@@ -9,7 +9,8 @@ List<List<int>> validMovesCalculator(
   bool isShortCastlePossibleForWhite,
   bool isLongCastlePossibleForWhite,
   bool isShortCastlePossibleForBlack,
-  bool isLongCastlePossibleForBlack, {
+  bool isLongCastlePossibleForBlack,
+  List<int>? enPassantSquare, {
   bool forCheck = false,
 }) {
   int direction = selectedPiece!.isWhite ? -1 : 1;
@@ -19,14 +20,14 @@ List<List<int>> validMovesCalculator(
     case 'pawn':
       bool isWhite = selectedPiece.isWhite;
 
-      // Forward 1
+      // forward 1
       if (!forCheck &&
           isInBoard(row + direction, col) &&
           board[row + direction][col] == null) {
         pieceMoves.add(<int>[row + direction, col]);
       }
 
-      // Forward 2 (initial move)
+      // forward 2 (initial move)
       if (!forCheck &&
           ((row == 1 && !isWhite) || (row == 6 && isWhite)) &&
           board[row + direction][col] == null &&
@@ -34,7 +35,7 @@ List<List<int>> validMovesCalculator(
         pieceMoves.add(<int>[row + 2 * direction, col]);
       }
 
-      // Diagonal captures or threats
+      // diagonal captures or threats
       for (int dx in <int>[-1, 1]) {
         int newRow = row + direction;
         int newCol = col + dx;
@@ -44,6 +45,27 @@ List<List<int>> validMovesCalculator(
                   board[newRow][newCol]!.isWhite != isWhite)) {
             pieceMoves.add(<int>[newRow, newCol]);
           }
+        }
+      }
+
+      if (enPassantSquare != null && !forCheck) {
+        int targetRow = enPassantSquare[0];
+        int targetCol = enPassantSquare[1];
+
+        // if the black pawn moved 2 squares forward, it is in row 3
+        // and if the white pawn is right besides it in row 3 and col-1 or col+1
+        // en passant is possible at this time only
+
+        // similary if white pawn is moved 2 squares forward, it is in row 4
+        // and if black pawn is right besides it in row 4 and col -1 or col + 1
+        // en passant is possible at this time only
+
+        // so the row will be either 3 or 4 and col will have an abs difference of 1
+        int conditionRow = selectedPiece.isWhite ? 3 : 4;
+        int conditionCol = (col - targetCol).abs();
+
+        if (row == conditionRow && conditionCol == 1) {
+          pieceMoves.add(<int>[targetRow, targetCol]);
         }
       }
       break;
@@ -341,7 +363,8 @@ bool isSquareAttacked(
           false,
           false,
           false,
-          forCheck: true
+          null,
+          forCheck: true,
         );
         for (List<int> move in moves) {
           if (move[0] == row && move[1] == col) return true;
