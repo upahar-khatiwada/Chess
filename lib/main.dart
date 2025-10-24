@@ -773,87 +773,98 @@ class _ChessGameState extends State<ChessGame> {
       navigatorKey: navigatorKey,
       home: Scaffold(
         backgroundColor: bgColor,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 8,
-                ),
-                itemCount: capturedWhitePiece.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Image.asset(capturedWhitePiece[index]!.imagePath);
-                },
-              ),
-            ),
-            Expanded(
-              flex: 3,
-              child: AspectRatio(
-                aspectRatio: 1,
+        body: Transform.rotate(
+          angle: isWhiteTurn ? 0 : 3.14159,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Expanded(
+                flex: 1,
                 child: GridView.builder(
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 64,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 8,
                   ),
+                  itemCount: capturedWhitePiece.length,
                   itemBuilder: (BuildContext context, int index) {
-                    int row = index ~/ 8;
-                    int col = index % 8;
-                    ChessPiece? piece = board[row][col];
-                    bool isMoveValid = false;
-
-                    // highlights the current selected piece's valid move
-                    for (List<int> validMove in validMoves) {
-                      if (validMove[0] == row && validMove[1] == col) {
-                        isMoveValid = true;
-                      }
-                    }
-
-                    return ChessBoard(
-                      index: index,
-                      piece: piece,
-                      isPieceSelected: sRow == row && sCol == col,
-                      onTap: () => selectChessPiece(row, col),
-
-                      isMoveValid: isMoveValid,
-                      board: board,
-                      row: row,
-                      col: col,
-                      currentlySelectedPiece: selectedPiece,
-                      isLongCastlePossibleForWhite:
-                          isLongCastlePossibleForWhite,
-                      isShortCastlePossibleForWhite:
-                          isShortCastlePossibleForWhite,
-                      isLongCastlePossibleForBlack:
-                          isLongCastlePossibleForBlack,
-                      isShortCastlePossibleForBlack:
-                          isShortCastlePossibleForBlack,
-                      isBlackKingChecked: isBlackKingChecked,
-                      isWhiteKingChecked: isWhiteKingChecked,
-                      whiteKingPosition: whiteKingPos,
-                      blackKingPosition: blackKingPos,
+                    return Transform.rotate(
+                      angle: isWhiteTurn ? 0 : -3.1415,
+                      child: Image.asset(capturedWhitePiece[index]!.imagePath),
                     );
                   },
                 ),
               ),
-            ),
-            Expanded(
-              flex: 1,
-              child: GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 8,
+              Expanded(
+                flex: 3,
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 64,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 8,
+                        ),
+                    itemBuilder: (BuildContext context, int index) {
+                      int row = index ~/ 8;
+                      int col = index % 8;
+                      ChessPiece? piece = board[row][col];
+                      bool isMoveValid = false;
+
+                      // highlights the current selected piece's valid move
+                      for (List<int> validMove in validMoves) {
+                        if (validMove[0] == row && validMove[1] == col) {
+                          isMoveValid = true;
+                        }
+                      }
+
+                      return ChessBoard(
+                        index: index,
+                        piece: piece,
+                        isPieceSelected: sRow == row && sCol == col,
+                        onTap: () => selectChessPiece(row, col),
+
+                        isMoveValid: isMoveValid,
+                        board: board,
+                        row: row,
+                        col: col,
+                        currentlySelectedPiece: selectedPiece,
+                        isLongCastlePossibleForWhite:
+                            isLongCastlePossibleForWhite,
+                        isShortCastlePossibleForWhite:
+                            isShortCastlePossibleForWhite,
+                        isLongCastlePossibleForBlack:
+                            isLongCastlePossibleForBlack,
+                        isShortCastlePossibleForBlack:
+                            isShortCastlePossibleForBlack,
+                        isBlackKingChecked: isBlackKingChecked,
+                        isWhiteKingChecked: isWhiteKingChecked,
+                        whiteKingPosition: whiteKingPos,
+                        blackKingPosition: blackKingPos,
+                        pieceRotationAngle: isWhiteTurn ? 0 : -3.14159,
+                      );
+                    },
+                  ),
                 ),
-                itemCount: capturedBlackPiece.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Image.asset(capturedBlackPiece[index]!.imagePath);
-                },
               ),
-            ),
-          ],
+              Expanded(
+                flex: 1,
+                child: GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 8,
+                  ),
+                  itemCount: capturedBlackPiece.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Transform.rotate(
+                      angle: isWhiteTurn ? 0 : -3.1415,
+                      child: Image.asset(capturedBlackPiece[index]!.imagePath),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

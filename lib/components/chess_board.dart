@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:chess/constants/project_constants.dart';
 import 'package:chess/helper_methods/chess_piece_class.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,7 @@ class ChessBoard extends StatelessWidget {
   final bool isBlackKingChecked;
   final List<int> whiteKingPosition;
   final List<int> blackKingPosition;
+  final double pieceRotationAngle;
 
   const ChessBoard({
     super.key,
@@ -40,6 +43,7 @@ class ChessBoard extends StatelessWidget {
     required this.isBlackKingChecked,
     required this.whiteKingPosition,
     required this.blackKingPosition,
+    required this.pieceRotationAngle,
   });
 
   @override
@@ -83,7 +87,9 @@ class ChessBoard extends StatelessWidget {
           border: Border.all(color: getBorderColor(), width: getBorderWidth()),
         ),
         // if tapped on a piece, color green else default color
-        child: piece != null ? Image.asset(piece!.imagePath) : null,
+        child: piece != null ? Transform.rotate(
+          angle: pieceRotationAngle,
+          child: Image.asset(piece!.imagePath)) : null,
       ),
     );
   }
