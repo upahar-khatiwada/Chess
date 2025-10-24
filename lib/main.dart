@@ -778,8 +778,8 @@ class _ChessGameState extends State<ChessGame> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Expanded(
-                flex: 1,
+              SizedBox(
+                height: 175,
                 child: GridView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -794,8 +794,8 @@ class _ChessGameState extends State<ChessGame> {
                   },
                 ),
               ),
-              Expanded(
-                flex: 3,
+              SizedBox(
+                height: 500,
                 child: AspectRatio(
                   aspectRatio: 1,
                   child: GridView.builder(
@@ -847,8 +847,8 @@ class _ChessGameState extends State<ChessGame> {
                   ),
                 ),
               ),
-              Expanded(
-                flex: 1,
+              SizedBox(
+                height: 175,
                 child: GridView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
